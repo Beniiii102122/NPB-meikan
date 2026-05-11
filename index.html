@@ -19,7 +19,7 @@
             padding-bottom: 50px; 
         }
 
-        /* --- メンテナンス画面（初期状態は非表示） --- */
+        /* --- メンテナンス画面 --- */
         #maintenance-screen {
             display: none;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -31,17 +31,25 @@
         /* --- メインコンテンツ --- */
         #main-content { display: block; }
 
-        /* 以下、これまでの選手名鑑のスタイルをそのまま継続 */
         .sticky-header { position: sticky; top: 0; z-index: 900; background: #fff; padding-bottom: 10px; border-bottom: 2px solid var(--team-accent); }
+        
+        /* サイドバー */
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; }
         .sidebar a, .sidebar .menu-item { padding: 15px 25px; text-decoration: none; font-size: 16px; color: #fff; display: block; border-bottom: 1px solid #444; cursor: pointer; }
+        .sidebar .contact-item { border-top: 1px solid #555; background-color: #444; color: #ffcc00 !important; margin-top: 10px; font-weight: bold; }
+
         .openbtn { font-size: 16px; cursor: pointer; background: #333; color: white; padding: 8px 12px; border: none; position: fixed; top: 10px; left: 10px; z-index: 1000; border-radius: 4px; }
         .header-container { text-align: center; padding: 45px 0 5px 0; }
         #team-name-display { font-size: 20px; font-weight: bold; margin-bottom: 2px; }
         #update-date-display { font-size: 11px; color: #666; margin-bottom: 5px; }
+        
+        /* フィルターエリア */
         .filter-area { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 auto; width: 95%; max-width: 500px; }
         #player-search { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
-        .filter-select { padding: 8px; border: 1px solid #ccc; background: #fff; width: 100%; border-radius: 4px; font-size: 13px; }
+        .select-row { display: flex; width: 100%; gap: 5px; }
+        .filter-select { padding: 8px; border: 1px solid #ccc; background: #fff; flex: 1; border-radius: 4px; font-size: 13px; }
+
+        /* 選手カード */
         .player-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px 5px; justify-content: center; }
         .player-card { background: #fff; border: 1px solid #ddd; padding: 20px 5px 12px 5px; width: 160px; min-height: 150px; text-align: center; cursor: pointer; position: relative; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
         .number-badge { position: absolute; top: 8px; left: 8px; background: var(--team-accent); color: #fff; font-size: 11px; font-weight: bold; min-width: 24px; height: 24px; line-height: 24px; border-radius: 12px; padding: 0 4px; box-sizing: border-box; }
@@ -69,6 +77,7 @@
             <div id="pa-league" style="display:none; background:#222;"></div>
             <div class="menu-item" onclick="toggleDropdown('ce-league')">セ・リーグ ▼</div>
             <div id="ce-league" style="display:none; background:#222;"></div>
+            <a href="https://forms.gle/RGfn64BjbfXaVZe78" target="_blank" class="menu-item contact-item">✉ お問い合わせ</a>
         </div>
 
         <div id="main">
@@ -79,14 +88,21 @@
                 </div>
                 <div class="filter-area">
                     <input type="text" id="player-search" placeholder="選手名を検索..." oninput="applyFilters()">
-                    <select id="filter-pos" class="filter-select" onchange="applyFilters()">
-                        <option value="">すべての守備位置</option>
-                        <option value="先発">先発</option>
-                        <option value="リリーフ">リリーフ</option>
-                        <option value="捕手">捕手</option>
-                        <option value="内野手">内野手</option>
-                        <option value="外野手">外野手</option>
-                    </select>
+                    <div class="select-row">
+                        <select id="filter-type" class="filter-select" onchange="applyFilters()">
+                            <option value="">すべての選手</option>
+                            <option value="投手">投手</option>
+                            <option value="野手">野手</option>
+                        </select>
+                        <select id="filter-pos" class="filter-select" onchange="applyFilters()">
+                            <option value="">すべての守備位置</option>
+                            <option value="先発">先発</option>
+                            <option value="リリーフ">リリーフ</option>
+                            <option value="捕手">捕手</option>
+                            <option value="内野手">内野手</option>
+                            <option value="外野手">外野手</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div id="container" class="player-container"></div>
@@ -94,20 +110,13 @@
     </div>
 
     <script>
-        // --- メンテナンス & 管理者判定ロジック ---
         function isMaintenanceTime() {
             const now = new Date();
             const day = now.getDay(); 
             const hour = now.getHours();
-
-            // 月曜 13:00 - 22:59
             if (day === 1 && hour >= 13 && hour < 23) {
-                // URLに ?admin=true が付いていたら「メンテナンスではない」と判定させる
                 const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('admin') === 'true') {
-                    console.log("管理者モードで表示します");
-                    return false; 
-                }
+                if (urlParams.get('admin') === 'true') return false; 
                 return true;
             }
             return false;
@@ -136,7 +145,6 @@
                 document.getElementById('main-content').style.display = 'none';
                 return;
             }
-
             const pa = document.getElementById('pa-league');
             const ce = document.getElementById('ce-league');
             Object.keys(TEAMS).forEach(k => {
@@ -215,11 +223,21 @@
 
         function applyFilters() {
             const q = document.getElementById('player-search').value.toLowerCase();
-            const selectedPos = document.getElementById('filter-pos').value;
+            const selectedType = document.getElementById('filter-type').value; // 投手・野手
+            const selectedPos = document.getElementById('filter-pos').value;   // 守備位置
+
             const filtered = allPlayers.filter(p => {
                 const nameMatch = p[1].includes(q);
+                
+                // 投手・野手の判定 (p[14]を利用)
+                let typeMatch = true;
+                if (selectedType === "投手") typeMatch = (p[14] === "投手");
+                if (selectedType === "野手") typeMatch = (p[14] === "野手");
+
+                // 守備位置の判定
                 let posMatch = selectedPos === "" ? true : (selectedPos === "リリーフ" ? (p[15].includes("中継") || p[15].includes("抑") || (p[14] === "投手" && !p[15].includes("先発"))) : p[15].includes(selectedPos));
-                return nameMatch && posMatch;
+                
+                return nameMatch && typeMatch && posMatch;
             });
             render(filtered);
         }
