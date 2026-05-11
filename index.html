@@ -3,84 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NPB 選手名鑑 - メンテナンス</title>
+    <title>NPB 選手名鑑</title>
     <style>
+        :root {
+            --team-bg: #f4f4f4;
+            --team-accent: #333333;
+            --sidebar-width: 250px;
+        }
+
         body { 
-            background-color: #f4f4f4; 
+            background-color: var(--team-bg); 
             font-family: sans-serif;
             color: #333; 
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            margin: 0; 
+            padding-bottom: 50px; 
         }
 
-        /* --- メンテナンス専用スタイル --- */
-        .maintenance-container {
-            text-align: center;
-            padding: 40px 20px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 90%;
+        /* --- メンテナンス画面（初期状態は非表示） --- */
+        #maintenance-screen {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 9999;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px;
         }
 
-        h1 { 
-            color: #d32f2f; 
-            font-size: 24px;
-            margin-bottom: 15px; 
-        }
+        /* --- メインコンテンツ --- */
+        #main-content { display: block; }
 
-        p { 
-            line-height: 1.6; 
-            font-size: 16px;
-            color: #666;
-        }
-
-        .icon {
-            font-size: 50px;
-            margin-top: 20px;
-            display: block;
-        }
-
-        /* 通常時はコンテンツを隠す */
-        #main-content { display: none; }
+        /* 以下、これまでの選手名鑑のスタイルをそのまま継続 */
+        .sticky-header { position: sticky; top: 0; z-index: 900; background: #fff; padding-bottom: 10px; border-bottom: 2px solid var(--team-accent); }
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; }
+        .sidebar a, .sidebar .menu-item { padding: 15px 25px; text-decoration: none; font-size: 16px; color: #fff; display: block; border-bottom: 1px solid #444; cursor: pointer; }
+        .openbtn { font-size: 16px; cursor: pointer; background: #333; color: white; padding: 8px 12px; border: none; position: fixed; top: 10px; left: 10px; z-index: 1000; border-radius: 4px; }
+        .header-container { text-align: center; padding: 45px 0 5px 0; }
+        #team-name-display { font-size: 20px; font-weight: bold; margin-bottom: 2px; }
+        #update-date-display { font-size: 11px; color: #666; margin-bottom: 5px; }
+        .filter-area { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 auto; width: 95%; max-width: 500px; }
+        #player-search { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        .filter-select { padding: 8px; border: 1px solid #ccc; background: #fff; width: 100%; border-radius: 4px; font-size: 13px; }
+        .player-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px 5px; justify-content: center; }
+        .player-card { background: #fff; border: 1px solid #ddd; padding: 20px 5px 12px 5px; width: 160px; min-height: 150px; text-align: center; cursor: pointer; position: relative; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .number-badge { position: absolute; top: 8px; left: 8px; background: var(--team-accent); color: #fff; font-size: 11px; font-weight: bold; min-width: 24px; height: 24px; line-height: 24px; border-radius: 12px; padding: 0 4px; box-sizing: border-box; }
+        .pos-badge { display: inline-block; padding: 1px 7px; background: #eee; color: #666; font-size: 10px; margin-bottom: 2px; border-radius: 3px; }
+        .name { font-size: 17px; margin: 12px 0; font-weight: bold; color: #000; line-height: 1.2; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; margin-top: auto; background: #f8f8f8; padding: 6px 0; border-radius: 4px; }
+        .label { font-size: 9px; color: #999; margin-bottom: 2px; }
+        .stats { font-size: 13px; font-weight: bold; color: #333; }
     </style>
 </head>
 <body>
 
-    <div id="maintenance-screen" class="maintenance-container">
-        <h1>定期メンテナンス中</h1>
-        <p>毎週月曜 13:00 〜 23:00 は<br>データ更新のためメンテナンスを実施します。</p>
-        <span class="icon">⚾</span>
+    <div id="maintenance-screen">
+        <h1 style="color:#d32f2f;">定期メンテナンス中</h1>
+        <p>毎週月曜 13:00 〜 23:00 はデータ更新のため<br>メンテナンスを実施しております。</p>
+        <div style="font-size: 40px; margin-top: 20px;">⏳⚾</div>
+    </div>
+
+    <div id="main-content">
+        <button class="openbtn" onclick="openNav()">☰ メニュー</button>
+
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <div class="menu-item" onclick="toggleDropdown('pa-league')">パ・リーグ ▼</div>
+            <div id="pa-league" style="display:none; background:#222;"></div>
+            <div class="menu-item" onclick="toggleDropdown('ce-league')">セ・リーグ ▼</div>
+            <div id="ce-league" style="display:none; background:#222;"></div>
+        </div>
+
+        <div id="main">
+            <div class="sticky-header">
+                <div class="header-container">
+                    <div id="team-name-display">読み込み中...</div>
+                    <div id="update-date-display">日付取得中...</div>
+                </div>
+                <div class="filter-area">
+                    <input type="text" id="player-search" placeholder="選手名を検索..." oninput="applyFilters()">
+                    <select id="filter-pos" class="filter-select" onchange="applyFilters()">
+                        <option value="">すべての守備位置</option>
+                        <option value="先発">先発</option>
+                        <option value="リリーフ">リリーフ</option>
+                        <option value="捕手">捕手</option>
+                        <option value="内野手">内野手</option>
+                        <option value="外野手">外野手</option>
+                    </select>
+                </div>
+            </div>
+            <div id="container" class="player-container"></div>
+        </div>
     </div>
 
     <script>
-        function checkMaintenance() {
+        // --- メンテナンス & 管理者判定ロジック ---
+        function isMaintenanceTime() {
             const now = new Date();
-            const day = now.getDay(); // 0:日, 1:月, 2:火...
+            const day = now.getDay(); 
             const hour = now.getHours();
 
-            // 月曜日(1) かつ 13時以降 かつ 23時未満
+            // 月曜 13:00 - 22:59
             if (day === 1 && hour >= 13 && hour < 23) {
+                // URLに ?admin=true が付いていたら「メンテナンスではない」と判定させる
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('admin') === 'true') {
+                    console.log("管理者モードで表示します");
+                    return false; 
+                }
                 return true;
             }
             return false;
         }
 
+        const TEAMS = {
+            SOFTBANK: { id: '1D55MmUmSxxvDf92UE_N0N3BTSrZOoR5qQxoXm_BL2_E', name: 'ソフトバンク', title: '福岡ソフトバンクホークス', accent: '#ffcc00', league: 'pa' },
+            FIGHTERS: { id: '14Nd-iWKpiJg7M0Ou2NG0bgARZHJY-JIdARiWCwVTmjM', name: '日本ハム', title: '北海道日本ハムファイターズ', accent: '#005491', league: 'pa' },
+            ORIX: { id: '1dAaf-rsBz87908KYebqehlK4yG2lUrvCEZWDWVAnXUw', name: 'オリックス', title: 'オリックス・バファローズ', accent: '#b6a269', league: 'pa' },
+            MARINES: { id: '1knxzRo7DNJO2FMXH09rhif4Shb06wEj80FF0whPoAuc', name: 'ロッテ', title: '千葉ロッテマリーンズ', accent: '#333', league: 'pa' },
+            EAGLES: { id: '1o5tO7aFL2tA_eWfQCPuhyatXC4oqQUOYc1C49DuQ_sU', name: '楽天', title: '東北楽天ゴールデンイーグルス', accent: '#870011', league: 'pa' },
+            LIONS: { id: '1rU0KqHiGXvS3hAMp0snepykftW4gnoEcqNAFcK9ZJw', name: '西武', title: '埼玉西武ライオンズ', accent: '#03192e', league: 'pa' },
+            HANSHIN: { id: '1hZwkTDSa4AOUSlvFvgYB74hU78Uk6Tb3Wxdr6wKuPhs', name: '阪神', title: '阪神タイガース', accent: '#ffcc00', league: 'ce' },
+            BAYSTARS: { id: '1EGfKQS7CPBxnqk7MN6MVoFc1naTvplPwMMlvO6ucXrs', name: 'DeNA', title: '横浜DeNAベイスターズ', accent: '#005596', league: 'ce' },
+            GIANTS: { id: '11fiRAjQKNG2widh8Hs9X5izk76CsBhkxC5GucEu3Gio', name: '巨人', title: '読売ジャイアンツ', accent: '#ff6600', league: 'ce' },
+            DRAGONS: { id: '1jgeiLHIvsXpg-Lb-NS9EwQtsciqqusxMYqUZNDVt5MA', name: '中日', title: '中日ドラゴンズ', accent: '#004a9e', league: 'ce' },
+            CARP: { id: '1xp_n78P5IMw63fD9dtDF9tQhK9zgF5otK9fwLNPOW2s', name: '広島', title: '広島東洋カープ', accent: '#ff0000', league: 'ce' },
+            SWALLOWS: { id: '1BYL-hAJNaSshpWfDYnYsk9GdUIT9nEEIGejLuFV4BxY', name: 'ヤクルト', title: '東京ヤクルトスワローズ', accent: '#97c24a', league: 'ce' }
+        };
+
+        let allPlayers = [];
+
         function init() {
-            if (!checkMaintenance()) {
-                // メンテナンス時間外であれば、本来の名鑑サイト（別URLや元のファイル）へリダイレクト
-                // もしくは、ここに元の全コードのロジックを戻すことも可能です。
-                // 現在はこのHTML自体が「メンテナンス専用」の表示になっています。
-                
-                // もしメンテナンス中以外は普通に使わせたい場合は、
-                // window.location.href = 'main.html'; などのリダイレクトを推奨します。
+            if (isMaintenanceTime()) {
+                document.getElementById('maintenance-screen').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+                return;
             }
+
+            const pa = document.getElementById('pa-league');
+            const ce = document.getElementById('ce-league');
+            Object.keys(TEAMS).forEach(k => {
+                const t = TEAMS[k];
+                const d = document.createElement('div');
+                d.style.padding = '12px 40px'; d.style.color = '#ccc'; d.style.cursor = 'pointer'; d.innerText = t.name;
+                d.onclick = () => switchTeam(k);
+                if(t.league === 'pa') pa.appendChild(d); else ce.appendChild(d);
+            });
+            switchTeam(localStorage.getItem('favTeam') || 'GIANTS');
         }
 
+        async function switchTeam(key) {
+            localStorage.setItem('favTeam', key);
+            const t = TEAMS[key];
+            closeNav();
+            document.getElementById('team-name-display').innerText = t.title;
+            document.documentElement.style.setProperty('--team-accent', t.accent);
+            document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">読み込み中...</p>';
+            
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${t.id}/gviz/tq?tqx=out:csv&sheet=シート1`);
+                const text = await res.text();
+                const rows = text.split(/\r?\n/).filter(r => r.trim() !== "").slice(1);
+                allPlayers = rows.map(r => r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(c => c.replace(/^"|"$/g, '')));
+                
+                if (allPlayers.length > 0) {
+                    const rawVal = String(allPlayers[0][0]); 
+                    let dateStr = "";
+                    if (rawVal.includes("Date(")) {
+                        const nums = rawVal.match(/\d+/g);
+                        if (nums && nums.length >= 3) dateStr = `${parseInt(nums[1]) + 1}/${nums[2]}`;
+                    } else if (rawVal.includes("/")) {
+                        const parts = rawVal.split(" ")[0].split("/");
+                        if (parts.length >= 3) dateStr = `${parseInt(parts[1])}/${parseInt(parts[2])}`;
+                        else dateStr = rawVal.split(" ")[0];
+                    }
+                    document.getElementById('update-date-display').innerText = (dateStr || "更新済み") + " 試合終了時点";
+                }
+                render(allPlayers);
+            } catch (e) { console.error(e); }
+        }
+
+        function render(data) {
+            const c = document.getElementById('container'); c.innerHTML = '';
+            data.forEach(p => {
+                const isP = p[14] === '投手';
+                const pos = p[15];
+                let l1, s1, l2, s2, l3, s3;
+                if (isP) {
+                    l1 = '防御率'; s1 = p[12];
+                    if (pos.includes('先発')) { l2 = '勝利'; s2 = p[3]; l3 = '敗戦'; s3 = p[4]; } 
+                    else { l2 = 'ホールド'; s2 = p[5]; l3 = 'セーブ'; s3 = p[6]; }
+                } else {
+                    l1 = '打率'; s1 = p[12]; l2 = '本塁打'; s2 = p[5]; l3 = '打点'; s3 = p[6];
+                }
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.onclick = () => showDetail(p);
+                card.innerHTML = `<div class="number-badge">${p[0]}</div><div><div class="pos-badge">${pos}</div><div class="name">${p[1]}</div></div><div class="stats-grid"><div><div class="label">${l1}</div><div class="stats">${s1}</div></div><div><div class="label">${l2}</div><div class="stats">${s2}</div></div><div><div class="label">${l3}</div><div class="stats">${s3}</div></div></div>`;
+                c.appendChild(card);
+            });
+        }
+
+        function showDetail(d) {
+            const isP = d[14] === '投手';
+            let items = isP ? [{l:'防御率', v:d[12]}, {l:'登板', v:d[2]}, {l:'勝利', v:d[3]}, {l:'敗戦', v:d[4]}, {l:'H', v:d[5]}, {l:'S', v:d[6]}, {l:'奪三振', v:d[9]}, {l:'WHIP', v:d[13]}] 
+                            : [{l:'打率', v:d[12]}, {l:'試合', v:d[2]}, {l:'本塁打', v:d[5]}, {l:'打点', v:d[6]}, {l:'盗塁', v:d[9]}, {l:'OPS', v:d[13]}];
+            const statsHTML = items.map(i => `<div style="background:#f8f8f8;padding:10px;border-radius:4px;text-align:center;border:1px solid #eee;"><div style="font-size:10px;color:#999;">${i.l}</div><div style="font-size:18px;font-weight:bold;">${i.v}</div></div>`).join('');
+            const modal = document.createElement('div');
+            modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:2000;";
+            modal.onclick = () => modal.remove();
+            modal.innerHTML = `<div style="background:#fff;padding:20px;border-radius:8px;width:85%;max-width:350px;" onclick="event.stopPropagation()"><div style="font-size:12px;color:#888;">#${d[0]} | ${d[15]}</div><div style="font-size:22px;font-weight:bold;margin-bottom:15px;border-bottom:2px solid var(--team-accent);">${d[1]}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${statsHTML}</div><button style="width:100%;margin-top:20px;padding:12px;background:#333;color:#fff;border:none;border-radius:4px;" onclick="this.closest('div').parentElement.remove()">閉じる</button></div>`;
+            document.body.appendChild(modal);
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('player-search').value.toLowerCase();
+            const selectedPos = document.getElementById('filter-pos').value;
+            const filtered = allPlayers.filter(p => {
+                const nameMatch = p[1].includes(q);
+                let posMatch = selectedPos === "" ? true : (selectedPos === "リリーフ" ? (p[15].includes("中継") || p[15].includes("抑") || (p[14] === "投手" && !p[15].includes("先発"))) : p[15].includes(selectedPos));
+                return nameMatch && posMatch;
+            });
+            render(filtered);
+        }
+
+        function openNav() { document.getElementById("mySidebar").style.width = "var(--sidebar-width)"; }
+        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
+        function toggleDropdown(id) { 
+            const d = document.getElementById(id); 
+            d.style.display = d.style.display === "block" ? "none" : "block"; 
+        }
         init();
     </script>
 </body>
