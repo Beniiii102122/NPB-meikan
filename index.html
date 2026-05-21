@@ -120,7 +120,7 @@
             LIONS: { id: '1rU0KqHiGXvS3hAMp0snepykftW4gnoEcqNAFcK9ZJw', name: '西武', title: '埼玉西武ライオンズ', accent: '#03192e', league: 'pa' },
             HANSHIN: { id: '1hZwkTDSa4AOUSlvFvgYB74hU78Uk6Tb3Wxdr6wKuPhs', name: '阪神', title: '阪神タイガース', accent: '#ffcc00', league: 'ce' },
             BAYSTARS: { id: '1EGfKQS7CPBxnqk7MN6MVoFc1naTvplPwMMlvO6ucXrs', name: 'DeNA', title: '横浜DeNAベイスターズ', accent: '#005596', league: 'ce' },
-            GIANTS: { id: '11fiRAjQKNG2widh8Hs9X5izk76CsBhkxC5GucEu3Gio', name: '巨人', title: '読売ジャイアンザ', accent: '#ff6600', league: 'ce' },
+            GIANTS: { id: '11fiRAjQKNG2widh8Hs9X5izk76CsBhkxC5GucEu3Gio', name: '巨人', title: '読売ジャイアンツ', accent: '#ff6600', league: 'ce' },
             DRAGONS: { id: '1jgeiLHIvsXpg-Lb-NS9EwQtsciqqusxMYqUZNDVt5MA', name: '中日', title: '中日ドラゴンズ', accent: '#004a9e', league: 'ce' },
             CARP: { id: '1xp_n78P5IMw63fD9dtDF9tQhK9zgF5otK9fwLNPOW2s', name: '広島', title: '広島東洋カープ', accent: '#ff0000', league: 'ce' },
             SWALLOWS: { id: '1BYL-hAJNaSshpWfDYnYsk9GdUIT9nEEIGejLuFV4BxY', name: 'ヤクルト', title: '東京ヤクルトスワローズ', accent: '#97c24a', league: 'ce' }
@@ -157,33 +157,45 @@
             document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">読み込み中...</p>';
             
             try {
-                // 【超重要修正】タブ名「シート1」をエンコードした形式で明示的に指定することで、並び順に関係なく名鑑データを狙い撃ちします
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${t.id}/gviz/tq?tqx=out:csv&sheet=%E3%82%B7%E3%83%BC%E3%83%881`);
                 const text = await res.text();
                 const rows = text.split(/\r?\n/).filter(r => r.trim() !== "").slice(1);
                 allPlayers = rows.map(r => r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(c => c.replace(/^"|"$/g, '')));
                 
+                // 【日付エラー完全対策】最初のマスに日付が入っていなくてもエラーで落とさないように安全装置を追加
+                let dateDisplayStr = "更新済み";
                 if (allPlayers.length > 0) {
                     const rawVal = String(allPlayers[0][0]); 
-                    let dateStr = "";
                     if (rawVal.includes("Date(")) {
                         const nums = rawVal.match(/\d+/g);
-                        if (nums && nums.length >= 3) dateStr = `${parseInt(nums[1]) + 1}/${nums[2]}`;
-                    } else if (rawVal.includes("/")) {
+                        if (nums && nums.length >= 3) dateDisplayStr = `${parseInt(nums[1]) + 1}/${nums[2]}`;
+                    } else if (rawVal.includes("/") && rawVal.length > 5 && isNaN(rawVal)) {
+                        // 文字列にスラッシュが含まれ、かつ純粋な背番号（数字）ではない場合のみ日付として処理
                         const parts = rawVal.split(" ")[0].split("/");
-                        if (parts.length >= 3) dateStr = `${parseInt(parts[1])}/${parseInt(parts[2])}`;
-                        else dateStr = rawVal.split(" ")[0];
+                        if (parts.length >= 3) dateDisplayStr = `${parseInt(parts[1])}/${parseInt(parts[2])}`;
                     }
-                    document.getElementById('update-date-display').innerText = (dateStr || "更新済み") + " 試合終了時点";
                 }
+                document.getElementById('update-date-display').innerText = dateDisplayStr + " 試合終了時点";
                 render(allPlayers);
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error(e); 
+                document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px; color: red;">データの読み込みに失敗しました。共有設定やURLをご確認ください。</p>';
+            }
         }
 
         function render(data) {
             const c = document.getElementById('container'); c.innerHTML = '';
-            data.forEach(p => {
-                const pos = p[14]; 
+            
+            // データが正しくパースされていない、またはヘッダー行を誤って叩いた場合のスキップ判定
+            const validPlayers = data.filter(p => p.length >= 15 && !isNaN(p[0]) && p[1] !== "名前");
+
+            if (validPlayers.length === 0) {
+                c.innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">表示できる選手データがありません。</p>';
+                return;
+            }
+
+            validPlayers.forEach(p => {
+                const pos = p[14] || '不明'; 
                 const birth = p[16] ? p[16] : '----/--/--'; 
                 const isP = pos.includes('投手') || pos.includes('先発') || pos.includes('中継') || pos.includes('抑え');
                 
@@ -214,7 +226,7 @@
         }
 
         function showDetail(d) {
-            const pos = d[14];
+            const pos = d[14] || '不明';
             const birth = d[16] ? d[16] : '----/--/--';
             const isP = pos.includes('投手') || pos.includes('先発') || pos.includes('中継') || pos.includes('抑え');
             
@@ -239,10 +251,13 @@
             const q = document.getElementById('player-search').value.toLowerCase();
             const selectedPos = document.getElementById('filter-pos').value;
 
-            const filtered = allPlayers.filter(p => {
+            // allPlayersそのものではなく、パース可能な正しい形式のデータのみを対象にフィルター
+            const validPlayers = allPlayers.filter(p => p.length >= 15 && !isNaN(p[0]) && p[1] !== "名前");
+
+            const filtered = validPlayers.filter(p => {
                 const nameMatch = p[1].includes(q);
                 let posMatch = true;
-                const posStr = p[14];
+                const posStr = p[14] || '';
 
                 if (selectedPos === "投手") {
                     posMatch = posStr.includes("投手") || posStr.includes("先発") || posStr.includes("中継") || posStr.includes("抑え");
