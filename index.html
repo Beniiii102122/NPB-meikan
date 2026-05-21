@@ -137,7 +137,6 @@
             const pa = document.getElementById('pa-league');
             const ce = document.getElementById('ce-league');
             
-            // TEAMSオブジェクトから自動でサイドバーのメニューボタンを生成
             Object.keys(TEAMS).forEach(k => {
                 const t = TEAMS[k];
                 const d = document.createElement('div');
@@ -146,7 +145,7 @@
                 if(t.league === 'pa') pa.appendChild(d); else ce.appendChild(d);
             });
             
-            // 初回起動時、保存されたチームがなければ自動的に「西武（LIONS）」を表示
+            // 初回起動時は西武（LIONS）を表示
             switchTeam(localStorage.getItem('favTeam') || 'LIONS');
         }
 
@@ -184,8 +183,8 @@
         function render(data) {
             const c = document.getElementById('container'); c.innerHTML = '';
             data.forEach(p => {
-                const pos = p[14]; // ポジション列
-                const birth = p[16] ? p[16] : '----/--/--'; // 生年月日列
+                const pos = p[14]; 
+                const birth = p[16] ? p[16] : '----/--/--'; 
                 const isP = pos.includes('投手') || pos.includes('先発') || pos.includes('中継') || pos.includes('抑え');
                 
                 let l1, s1, l2, s2, l3, s3;
