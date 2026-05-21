@@ -157,12 +157,12 @@
             document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">読み込み中...</p>';
             
             try {
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${t.id}/gviz/tq?tqx=out:csv&sheet=%E3%82%B7%E3%83%BC%E3%83%881`);
+                // 【確定修正】「&sheet=」を排除し、「&gid=0」に固定。これでシート名が何であれ一番左のシートを確実に開きます
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${t.id}/gviz/tq?tqx=out:csv&gid=0`);
                 const text = await res.text();
                 const rows = text.split(/\r?\n/).filter(r => r.trim() !== "").slice(1);
                 allPlayers = rows.map(r => r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(c => c.replace(/^"|"$/g, '')));
                 
-                // 【日付エラー完全対策】最初のマスに日付が入っていなくてもエラーで落とさないように安全装置を追加
                 let dateDisplayStr = "更新済み";
                 if (allPlayers.length > 0) {
                     const rawVal = String(allPlayers[0][0]); 
@@ -170,7 +170,6 @@
                         const nums = rawVal.match(/\d+/g);
                         if (nums && nums.length >= 3) dateDisplayStr = `${parseInt(nums[1]) + 1}/${nums[2]}`;
                     } else if (rawVal.includes("/") && rawVal.length > 5 && isNaN(rawVal)) {
-                        // 文字列にスラッシュが含まれ、かつ純粋な背番号（数字）ではない場合のみ日付として処理
                         const parts = rawVal.split(" ")[0].split("/");
                         if (parts.length >= 3) dateDisplayStr = `${parseInt(parts[1])}/${parseInt(parts[2])}`;
                     }
@@ -179,14 +178,12 @@
                 render(allPlayers);
             } catch (e) { 
                 console.error(e); 
-                document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px; color: red;">データの読み込みに失敗しました。共有設定やURLをご確認ください。</p>';
+                document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px; color: red;">データの読み込みに失敗しました。</p>';
             }
         }
 
         function render(data) {
             const c = document.getElementById('container'); c.innerHTML = '';
-            
-            // データが正しくパースされていない、またはヘッダー行を誤って叩いた場合のスキップ判定
             const validPlayers = data.filter(p => p.length >= 15 && !isNaN(p[0]) && p[1] !== "名前");
 
             if (validPlayers.length === 0) {
@@ -250,8 +247,6 @@
         function applyFilters() {
             const q = document.getElementById('player-search').value.toLowerCase();
             const selectedPos = document.getElementById('filter-pos').value;
-
-            // allPlayersそのものではなく、パース可能な正しい形式のデータのみを対象にフィルター
             const validPlayers = allPlayers.filter(p => p.length >= 15 && !isNaN(p[0]) && p[1] !== "名前");
 
             const filtered = validPlayers.filter(p => {
