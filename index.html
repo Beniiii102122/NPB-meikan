@@ -136,6 +136,8 @@
             }
             const pa = document.getElementById('pa-league');
             const ce = document.getElementById('ce-league');
+            
+            // TEAMSオブジェクトから自動でサイドバーのメニューボタンを生成
             Object.keys(TEAMS).forEach(k => {
                 const t = TEAMS[k];
                 const d = document.createElement('div');
@@ -143,7 +145,9 @@
                 d.onclick = () => switchTeam(k);
                 if(t.league === 'pa') pa.appendChild(d); else ce.appendChild(d);
             });
-            switchTeam(localStorage.getItem('favTeam') || 'GIANTS');
+            
+            // 初回起動時、保存されたチームがなければ自動的に「西武（LIONS）」を表示
+            switchTeam(localStorage.getItem('favTeam') || 'LIONS');
         }
 
         async function switchTeam(key) {
