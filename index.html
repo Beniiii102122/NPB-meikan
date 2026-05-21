@@ -157,36 +157,33 @@
             document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">読み込み中...</p>';
             
             try {
-                // 【全角を徹底排除】エラーの起きないクリーンな半角URLに統一しました
+                // gid=0 で一番左のシートを確実に取得
                 const res = await fetch('https://docs.google.com/spreadsheets/d/' + t.id + '/gviz/tq?tqx=out:csv&gid=0');
                 const text = await res.text();
-                const rows = text.split(/\r?\n/).filter(r => r.trim() !== "").slice(1);
+                const rows = text.split(/\r?\n/).filter(r => r.trim() !== "");
                 
-                // 【全角引用符エラー修正】全角文字を完全に排除したクリーンな記述です
-                allPlayers = rows.map(r => r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(c => c.replace(/^"|"$/g, '')));
-                
-                let dateDisplayStr = "更新済み";
-                if (allPlayers.length > 0) {
-                    const rawVal = String(allPlayers[0][0]); 
-                    if (rawVal.includes("Date(")) {
-                        const nums = rawVal.match(/\d+/g);
-                        if (nums && nums.length >= 3) dateDisplayStr = (parseInt(nums[1]) + 1) + '/' + nums[2];
-                    } else if (rawVal.includes("/") && rawVal.length > 5 && isNaN(rawVal)) {
-                        const parts = rawVal.split(" ")[0].split("/");
-                        if (parts.length >= 3) dateDisplayStr = parseInt(parts[1]) + '/' + parseInt(parts[2]);
-                    }
-                }
-                document.getElementById('update-date-display').innerText = dateDisplayStr + " 試合終了時点";
+                // ヘッダー行（1行目）を除外してデータをパース
+                const parsedRows = rows.map(r => {
+                    const matches = r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    return matches ? matches.map(c => c.replace(/^"|"$/g, '')) : [];
+                });
+
+                // 「背番号」という文字が含まれるヘッダー行を完全に排除
+                allPlayers = parsedRows.filter(p => p.length > 0 && p[0] !== "背番号");
+
+                document.getElementById('update-date-display').innerText = "更新済み 試合終了時点";
                 render(allPlayers);
             } catch (e) { 
                 console.error(e); 
-                document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px; color: red;">データの取得に失敗しました。ファイル設定を確認してください。</p>';
+                document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px; color: red;">データの取得に失敗しました。</p>';
             }
         }
 
         function render(data) {
             const c = document.getElementById('container'); c.innerHTML = '';
-            const validPlayers = data.filter(p => p.length >= 15 && !isNaN(p[0]) && p[1] !== "名前");
+            
+            // 西武のデータ構造（最低15列以上あり、背番号が数字であること）に適合する行だけを抽出
+            const validPlayers = data.filter(p => p.length >= 15 && !isNaN(p[0].trim()));
 
             if (validPlayers.length === 0) {
                 c.innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">表示できる選手データがありません。</p>';
@@ -194,19 +191,19 @@
             }
 
             validPlayers.forEach(p => {
-                const pos = p[14] || '不明'; 
-                const birth = p[16] ? p[16] : '----/--/--'; 
+                const pos = p[14] || '不明'; // 15列目（インデックス14）のポジションを取得
+                const birth = p[16] ? p[16] : '----/--/--'; // 17列目（インデックス16）の生年月日
                 const isP = pos.includes('投手') || pos.includes('先発') || pos.includes('中継') || pos.includes('抑え');
                 
                 let l1, s1, l2, s2, l3, s3;
                 if (isP) {
-                    l1 = '防御率'; s1 = p[12];
-                    l2 = '勝利';   s2 = p[3];
-                    l3 = '敗戦';   s3 = p[4];
+                    l1 = '防御率'; s1 = p[12]; // 13列目
+                    l2 = '勝利';   s2 = p[3];  // 4列目
+                    l3 = '敗戦';   s3 = p[4];  // 5列目
                 } else {
-                    l1 = '打率';   s1 = p[12]; 
-                    l2 = '本塁打'; s2 = p[5]; 
-                    l3 = '打点';   s3 = p[6];
+                    l1 = '打率';   s1 = p[12]; // 13列目
+                    l2 = '本塁打'; s2 = p[5];  // 6列目
+                    l3 = '打点';   s3 = p[6];  // 7列目
                 }
                 const card = document.createElement('div');
                 card.className = 'player-card';
@@ -249,7 +246,7 @@
         function applyFilters() {
             const q = document.getElementById('player-search').value.toLowerCase();
             const selectedPos = document.getElementById('filter-pos').value;
-            const validPlayers = allPlayers.filter(p => p.length >= 15 && !isNaN(p[0]) && p[1] !== "名前");
+            const validPlayers = allPlayers.filter(p => p.length >= 15 && !isNaN(p[0].trim()));
 
             const filtered = validPlayers.filter(p => {
                 const nameMatch = p[1].includes(q);
