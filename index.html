@@ -35,11 +35,15 @@
         
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; }
         .sidebar a, .sidebar .menu-item { padding: 15px 25px; text-decoration: none; font-size: 16px; color: #fff; display: block; border-bottom: 1px solid #444; cursor: pointer; }
+        
+        /* メニュー内の注意事項専用スタイリング */
+        .sidebar .notice-box { padding: 15px 20px; font-size: 12px; color: #ccc; line-height: 1.6; border-bottom: 1px solid #444; background: #2a2a2a; }
+        .sidebar .notice-title { font-weight: bold; color: #ffcc00; margin-bottom: 8px; font-size: 13px; }
+
         .sidebar .contact-item { border-top: 1px solid #555; background-color: #444; color: #ffcc00 !important; margin-top: 10px; font-weight: bold; }
 
         .openbtn { font-size: 16px; cursor: pointer; background: #333; color: white; padding: 8px 12px; border: none; position: fixed; top: 10px; left: 10px; z-index: 1000; border-radius: 4px; }
         
-        /* 【調整】時間表示が消えたため、チーム名周りの余白をすっきりさせました */
         .header-container { text-align: center; padding: 45px 0 10px 0; }
         #team-name-display { font-size: 20px; font-weight: bold; }
         
@@ -80,6 +84,15 @@
             <div id="pa-league" style="display:none; background:#222;"></div>
             <div class="menu-item" onclick="toggleDropdown('ce-league')">セ・リーグ ▼</div>
             <div id="ce-league" style="display:none; background:#222;"></div>
+            
+            <div class="notice-box">
+                <div class="notice-title">⚠️ 注意事項</div>
+                ・成績が公式記録と違っている可能性があります。お気づきの点がございましたらお問い合わせ下さい。<br><br>
+                ・成績が更新されるタイミングは特に決まっておりません。<br><br>
+                ・毎週月曜日の13:00~23:00にメンテナンスを行います。<br><br>
+                ・2027年にはMLBの成績を掲載予定です。
+            </div>
+
             <a href="https://forms.gle/RGfn64BjbfXaVZe78" target="_blank" class="menu-item contact-item">✉ お問い合わせ</a>
         </div>
 
@@ -87,7 +100,7 @@
             <div class="sticky-header">
                 <div class="header-container">
                     <div id="team-name-display">読み込み中...</div>
-                    </div>
+                </div>
                 <div class="filter-area">
                     <input type="text" id="player-search" placeholder="選手名を検索..." oninput="applyFilters()">
                     <select id="filter-pos" class="filter-select" onchange="applyFilters()">
@@ -172,7 +185,6 @@
                 
                 let parsedPlayers = rows.map(r => r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(c => c.replace(/^"|"$/g, '')));
                 
-                // 背番号順（数値での昇順）にソート
                 parsedPlayers.sort((a, b) => {
                     const numA = parseInt(a[0], 10);
                     const numB = parseInt(b[0], 10);
@@ -183,8 +195,6 @@
                 });
                 
                 allPlayers = parsedPlayers;
-                
-                // 更新時間表示のテキスト書き換え処理（要素を削除したため）も不要になったので削りました
                 render(allPlayers);
             } catch (e) { console.error(e); }
         }
