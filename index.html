@@ -19,15 +19,6 @@
             padding-bottom: 50px; 
         }
 
-        /* --- メンテナンス画面 --- */
-        #maintenance-screen {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 9999;
-            flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 20px;
-        }
-
         /* --- メインコンテンツ --- */
         #main-content { display: block; }
 
@@ -36,7 +27,7 @@
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; }
         .sidebar a, .sidebar .menu-item { padding: 15px 25px; text-decoration: none; font-size: 16px; color: #fff; display: block; border-bottom: 1px solid #444; cursor: pointer; }
         
-        /* 【変更】プルダウン内に入る注意事項のスタイリング */
+        /* プルダウン内に入る注意事項のスタイリング */
         .sidebar .notice-content { padding: 15px 25px; font-size: 12px; color: #ccc; line-height: 1.6; background: #2a2a2a; border-bottom: 1px solid #444; }
 
         .sidebar .contact-item { border-top: 1px solid #555; background-color: #444; color: #ffcc00 !important; margin-top: 10px; font-weight: bold; }
@@ -68,12 +59,6 @@
 </head>
 <body>
 
-    <div id="maintenance-screen">
-        <h1 style="color:#d32f2f;">定期メンテナンス中</h1>
-        <p>毎週月曜 13:00 〜 23:00 はデータ更新のため<br>メンテナンスを実施しております。</p>
-        <div style="font-size: 40px; margin-top: 20px;">⏳⚾</div>
-    </div>
-
     <div id="main-content">
         <button class="openbtn" onclick="openNav()">☰ メニュー</button>
 
@@ -88,7 +73,6 @@
             <div id="notice-dropdown" class="notice-content" style="display:none;">
                 ・成績が公式記録と違っている可能性があります。お気づきの点がございましたらお問い合わせ下さい。<br><br>
                 ・成績が更新されるタイミングは特に決まっておりません。<br><br>
-                ・毎週月曜日の13:00~23:00にメンテナンスを行います。<br><br>
                 ・2027年にはMLBの成績を掲載予定です。
             </div>
 
@@ -116,18 +100,6 @@
     </div>
 
     <script>
-        function isMaintenanceTime() {
-            const now = new Date();
-            const day = now.getDay(); 
-            const hour = now.getHours();
-            if (day === 1 && hour >= 13 && hour < 23) {
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('admin') === 'true') return false; 
-                return true;
-            }
-            return false;
-        }
-
         const TEAMS = {
             SOFTBANK: { id: '1D55MmUmSxxvDf92UE_N0N3BTSrZOoR5qQxoXm_BL2_E', name: 'ソフトバンク', title: '福岡ソフトバンクホークス', accent: '#ffcc00', league: 'pa' },
             FIGHTERS: { id: '14Nd-iWKpiJg7M0Ou2NG0bgARZHJY-JIdARiWCwVTmjM', name: '日本ハム', title: '北海道日本ハムファイターズ', accent: '#005491', league: 'pa' },
@@ -146,11 +118,6 @@
         let allPlayers = [];
 
         function init() {
-            if (isMaintenanceTime()) {
-                document.getElementById('maintenance-screen').style.display = 'flex';
-                document.getElementById('main-content').style.display = 'none';
-                return;
-            }
             const pa = document.getElementById('pa-league');
             const ce = document.getElementById('ce-league');
             
@@ -287,9 +254,15 @@
         }
 
         function openNav() { document.getElementById("mySidebar").style.width = "var(--sidebar-width)"; }
-        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
         
-        // 既存のトグル関数（toggleDropdown）がそのまま注意事項の開閉にも自動で対応します
+        // 【変更】メニューが閉じるときに、すべてのプルダウンエリアを非表示（none）にします
+        function closeNav() { 
+            document.getElementById("mySidebar").style.width = "0"; 
+            document.getElementById("pa-league").style.display = "none";
+            document.getElementById("ce-league").style.display = "none";
+            document.getElementById("notice-dropdown").style.display = "none";
+        }
+
         function toggleDropdown(id) { 
             const d = document.getElementById(id); 
             d.style.display = d.style.display === "block" ? "none" : "block"; 
