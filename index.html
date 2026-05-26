@@ -37,7 +37,7 @@
         .header-container { text-align: center; padding: 45px 0 10px 0; }
         #team-name-display { font-size: 20px; font-weight: bold; }
         
-        /* 📢 追加：自動更新お知らせ枠のスタイル */
+        /* 📢 自動更新お知らせ枠 */
         .notice-info-container {
             width: 95%;
             max-width: 500px;
@@ -75,15 +75,41 @@
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; margin-top: auto; background: #f8f8f8; padding: 6px 0; border-radius: 4px; }
         .label { font-size: 9px; color: #999; margin-bottom: 2px; }
         .stats { font-size: 13px; font-weight: bold; color: #333; }
+
+        /* 🏠 追加：ホーム画面（球団選択グリッド）のスタイル */
+        #home-screen { padding: 20px 10px; max-width: 800px; margin: 0 auto; }
+        .home-title { text-align: center; font-size: 24px; font-weight: bold; margin: 40px 0 20px 0; }
+        .league-title { font-size: 18px; font-weight: bold; margin: 20px 5px 10px 5px; padding-left: 8px; }
+        .pa-title { border-left: 5px solid #00bfff; }
+        .ce-title { border-left: 5px solid #32cd32; }
+        .home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 25px; }
+        .home-team-btn { background: #fff; padding: 15px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-bottom: 4px solid #ccc; transition: transform 0.1s; }
+        .home-team-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <div id="main-content">
+    <div id="home-screen">
+        <div class="home-title">⚾ NPB 選手名鑑 ⚾</div>
+        
+        <div class="notice-info-container">
+            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vT1gQ3n2rE5pPl7rP9E6b1gU_AeoZ8oPzV9zYg6v4cK3E1mPZ8kZ_v9w_Wc4W-z-B8vV_g7n/pubhtml?gid=0&range=R1&single=true&widget=false&headers=false" scrolling="no"></iframe>
+        </div>
+
+        <div class="league-title pa-title">パシフィック・リーグ</div>
+        <div id="home-pa-grid" class="home-grid"></div>
+
+        <div class="league-title ce-title">セントラル・リーグ</div>
+        <div id="home-ce-grid" class="home-grid"></div>
+    </div>
+
+    <div id="main-content" style="display: none;">
         <button class="openbtn" onclick="openNav()">☰ メニュー</button>
 
         <div id="mySidebar" class="sidebar">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <div class="menu-item" style="color: #fff; background: #555; font-weight: bold;" onclick="showHome()">🏠 ホーム画面に戻る</div>
+            
             <div class="menu-item" style="color: #00bfff;" onclick="toggleDropdown('pa-league')">パ・リーグ ▼</div>
             <div id="pa-league" style="display:none; background:#222;"></div>
             <div class="menu-item" style="color: #32cd32;" onclick="toggleDropdown('ce-league')">セ・リーグ ▼</div>
@@ -145,22 +171,53 @@
         function init() {
             const pa = document.getElementById('pa-league');
             const ce = document.getElementById('ce-league');
+            const homePa = document.getElementById('home-pa-grid');
+            const homeCe = document.getElementById('home-ce-grid');
             
             Object.keys(TEAMS).forEach(k => {
                 const t = TEAMS[k];
+                
+                // サイドバーメニュー用の生成
                 const d = document.createElement('div');
                 d.style.padding = '12px 40px'; d.style.color = '#ccc'; d.style.cursor = 'pointer'; d.innerText = t.name;
                 d.onclick = () => switchTeam(k);
-                if(t.league === 'pa') pa.appendChild(d); else ce.appendChild(d);
+                
+                // 🏠 追加：ホーム画面（グリッド）用のボタン生成
+                const btn = document.createElement('div');
+                btn.className = 'home-team-btn';
+                btn.innerText = t.name;
+                btn.style.borderBottomColor = t.accent;
+                btn.onclick = () => switchTeam(k);
+
+                if(t.league === 'pa') {
+                    pa.appendChild(d);
+                    homePa.appendChild(btn);
+                } else {
+                    ce.appendChild(d);
+                    homeCe.appendChild(btn);
+                }
             });
             
-            switchTeam(localStorage.getItem('favTeam') || 'LIONS');
+            // 最初は特定のチームを開かず、ホーム画面を表示するように変更
+            document.getElementById('home-screen').style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+        }
+
+        // 🏠 追加：ホーム画面に戻る処理
+        function showHome() {
+            closeNav();
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('home-screen').style.display = 'block';
         }
 
         async function switchTeam(key) {
             localStorage.setItem('favTeam', key);
             const t = TEAMS[key];
             closeNav();
+
+            // 画面の切り替え（ホームを隠して名鑑を表示）
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
 
             document.getElementById('player-search').value = '';
             document.getElementById('filter-pos').value = '';
