@@ -30,32 +30,13 @@
         /* プルダウン内に入る注意事項のスタイリング */
         .sidebar .notice-content { padding: 15px 25px; font-size: 12px; color: #ccc; line-height: 1.6; background: #2a2a2a; border-bottom: 1px solid #444; }
 
-        .sidebar .contact-item { border-top: 1px solid #555; background-color: #444; color: #ffcc00 !important; margin-top: 10px; font-weight: bold; }
+        /* ✉ お問い合わせボタンのスタイリング */
+        .sidebar .contact-item { border-top: 1px solid #555; background-color: #333; color: #fff !important; font-weight: bold; }
 
         .openbtn { font-size: 16px; cursor: pointer; background: #333; color: white; padding: 8px 12px; border: none; position: fixed; top: 10px; left: 10px; z-index: 1000; border-radius: 4px; }
         
         .header-container { text-align: center; padding: 45px 0 10px 0; }
         #team-name-display { font-size: 20px; font-weight: bold; }
-        
-        /* 📢 自動更新お知らせ枠のスタイル（ホーム画面専用） */
-        .notice-info-container {
-            width: 95%;
-            max-width: 500px;
-            margin: 0 auto 10px auto;
-            padding: 8px;
-            background-color: #fff3cd;
-            border: 1px solid #ffeeba;
-            border-radius: 4px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .notice-info-container iframe {
-            width: 100%;
-            height: 22px;
-            border: none;
-            overflow: hidden;
-            display: block;
-        }
 
         .filter-area { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 auto; width: 95%; max-width: 500px; }
         #player-search { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
@@ -91,10 +72,6 @@
 
     <div id="home-screen">
         <div class="home-title">⚾ NPB 選手名鑑 ⚾</div>
-        
-        <div class="notice-info-container">
-            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vT1gQ3n2rE5pPl7rP9E6b1gU_AeoZ8oPzV9zYg6v4cK3E1mPZ8kZ_v9w_Wc4W-z-B8vV_g7n/pubhtml?gid=0&range=R1&single=true&widget=false&headers=false" scrolling="no"></iframe>
-        </div>
 
         <div class="league-title pa-title">パシフィック・リーグ</div>
         <div id="home-pa-grid" class="home-grid"></div>
@@ -115,8 +92,9 @@
             <div class="menu-item" style="color: #32cd32;" onclick="toggleDropdown('ce-league')">セ・リーグ ▼</div>
             <div id="ce-league" style="display:none; background:#222;"></div>
             
-            <div class="menu-item" style="color: #ffcc00;" onclick="toggleDropdown('notice-dropdown')">⚠️ 注意事項 ▼</div>
+            <div class="menu-item" style="color: #fff;" onclick="toggleDropdown('notice-dropdown')">注意事項 ▼</div>
             <div id="notice-dropdown" class="notice-content" style="display:none;">
+                ・成績については一軍の成績のみになります。<br><br>
                 ・成績が公式記録と違っている可能性があります。お気づきの点がございましたらお問い合わせ下さい。<br><br>
                 ・成績が更新されるタイミングは特に決まっておりません。<br><br>
                 ・2027年にはMLBの成績を掲載予定です。
