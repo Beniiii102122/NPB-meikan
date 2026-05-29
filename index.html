@@ -43,7 +43,25 @@
         .filter-select { padding: 10px; border: 1px solid #ccc; background: #fff; width: 100%; border-radius: 4px; font-size: 15px; }
 
         .player-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px 5px; justify-content: center; }
-        .player-card { background: #fff; border: 1px solid #ddd; padding: 25px 5px 12px 5px; width: 160px; min-height: 155px; text-align: center; cursor: pointer; position: relative; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* 🆕 選手カードにコンテナ計測用の設定を追加 */
+        .player-card { 
+            background: #fff; 
+            border: 1px solid #ddd; 
+            padding: 25px 5px 12px 5px; 
+            width: 160px; 
+            min-height: 155px; 
+            text-align: center; 
+            cursor: pointer; 
+            position: relative; 
+            border-radius: 6px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            box-sizing: border-box;
+            container-type: inline-size; /* 横幅の変化を感知できるようにする */
+        }
         
         .number-badge { position: absolute; top: 8px; left: 8px; background: var(--team-accent); color: #fff; font-size: 11px; font-weight: bold; min-width: 24px; height: 24px; line-height: 24px; border-radius: 12px; padding: 0 4px; box-sizing: border-box; }
         
@@ -51,7 +69,29 @@
         .army-1f { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
         .army-2f { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
 
-        .name { font-size: 18px; margin: 15px 0 2px 0; font-weight: bold; color: #000; line-height: 1.2; }
+        /* 🆕 名前の共通スタイル（基本は18px、改行させない、はみ出た部分は収める） */
+        .name-wrapper {
+            margin: 15px 0 2px 0;
+            padding: 0 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 22px;
+        }
+        .name { 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: #000; 
+            line-height: 1.2; 
+            white-space: nowrap; /* 絶対に2行に改行させない */
+        }
+        
+        /* 🆕 名前の文字数に応じた文字サイズ自動調整ルール */
+        .name.len-4 { font-size: 16px; }
+        .name.len-5 { font-size: 14px; }
+        .name.len-6 { font-size: 12px; }
+        .name.len-long { font-size: 10px; } /* 7文字以上の超ロング名 */
+
         .birth-date { font-size: 10px; color: #777; margin-bottom: 12px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; margin-top: auto; background: #f8f8f8; padding: 6px 0; border-radius: 4px; }
         .label { font-size: 9px; color: #999; margin-bottom: 2px; }
@@ -67,7 +107,7 @@
         .home-team-btn { background: #fff; padding: 15px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-bottom: 4px solid #ccc; transition: transform 0.1s; }
         .home-team-btn:active { transform: scale(0.95); }
 
-        /* 🆕 ホーム画面用フッターメニュー */
+        /* ホーム画面用フッターメニュー */
         .home-footer-menu { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .home-menu-item { font-size: 16px; color: #333; text-decoration: none; cursor: pointer; font-weight: bold; }
         .home-menu-item:hover { text-decoration: underline; }
@@ -160,6 +200,19 @@
 
         let allPlayers = [];
 
+        function calculateAge(birthStr) {
+            if (!birthStr || birthStr.includes('---')) return '';
+            const birthDate = new Date(birthStr);
+            if (isNaN(birthDate.getTime())) return '';
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return ` (${age}歳)`;
+        }
+
         function init() {
             const pa = document.getElementById('pa-league');
             const ce = document.getElementById('ce-league');
@@ -243,11 +296,26 @@
         function render(data) {
             const c = document.getElementById('container'); c.innerHTML = '';
             data.forEach(p => {
+                const playerName = p[1] || '';
                 const pos = p[14]; 
                 const army = p[15] || '----'; 
                 const birth = p[16] ? p[16] : '----/--/--'; 
                 const isP = pos.includes('投手') || pos.includes('先発') || pos.includes('中継') || pos.includes('抑え');
                 
+                const ageStr = calculateAge(p[16]);
+
+                // 🆕 名前の文字数（長さ）に応じて適用するCSSクラスを動的に決定
+                let lenClass = '';
+                if (playerName.length === 4) {
+                    lenClass = 'len-4';
+                } else if (playerName.length === 5) {
+                    lenClass = 'len-5';
+                } else if (playerName.length === 6) {
+                    lenClass = 'len-6';
+                } else if (playerName.length >= 7) {
+                    lenClass = 'len-long';
+                }
+
                 let l1, s1, l2, s2, l3, s3;
                 if (isP) {
                     l1 = '防御率'; s1 = p[12];
@@ -267,11 +335,15 @@
                 const card = document.createElement('div');
                 card.className = 'player-card';
                 card.onclick = () => showDetail(p);
+                
+                // 🆕 名前部分を 「name-wrapper」 で囲み、文字数別のクラスを追加しました
                 card.innerHTML = `
                     <div class="number-badge">${p[0]}</div>
                     <div class="army-badge ${armyClass}">${army}</div>
-                    <div class="name">${p[1]}</div>
-                    <div class="birth-date">${birth}</div>
+                    <div class="name-wrapper">
+                        <div class="name ${lenClass}">${playerName}</div>
+                    </div>
+                    <div class="birth-date">${birth}${ageStr}</div>
                     <div class="stats-grid">
                         <div><div class="label">${l1}</div><div class="stats">${s1}</div></div>
                         <div><div class="label">${l2}</div><div class="stats">${s2}</div></div>
@@ -287,6 +359,8 @@
             const birth = d[16] ? d[16] : '----/--/--';
             const isP = pos.includes('投手') || pos.includes('先発') || pos.includes('中継') || pos.includes('抑え');
             
+            const ageStr = calculateAge(d[16]);
+
             let items = isP ? [{l:'防御率', v:d[12]}, {l:'登板', v:d[2]}, {l:'勝利', v:d[3]}, {l:'敗戦', v:d[4]}, {l:'ホールド', v:d[5]}, {l:'セーブ', v:d[6]}, {l:'奪三振', v:d[9]}, {l:'WHIP', v:d[13]}] 
                             : [{l:'打率', v:d[12]}, {l:'試合', v:d[2]}, {l:'本塁打', v:d[5]}, {l:'打点', v:d[6]}, {l:'盗塁', v:d[9]}, {l:'OPS', v:d[13]}];
             const statsHTML = items.map(i => `<div style="background:#f8f8f8;padding:10px;border-radius:4px;text-align:center;border:1px solid #eee;"><div style="font-size:10px;color:#999;">${i.l}</div><div style="font-size:18px;font-weight:bold;">${i.v}</div></div>`).join('');
@@ -297,7 +371,7 @@
                 <div style="background:#fff;padding:20px;border-radius:8px;width:85%;max-width:350px;" onclick="event.stopPropagation()">
                     <div style="font-size:12px;color:#888;">#${d[0]} | ${d[14]} [${army}]</div>
                     <div style="font-size:22px;font-weight:bold;margin-bottom:2px;border-bottom:2px solid var(--team-accent);">${d[1]}</div>
-                    <div style="font-size:12px;color:#666;margin-bottom:15px;">生年月日: ${birth}</div>
+                    <div style="font-size:12px;color:#666;margin-bottom:15px;">生年月日: ${birth}${ageStr}</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${statsHTML}</div>
                     <button style="width:100%;margin-top:20px;padding:12px;background:#333;color:#fff;border:none;border-radius:4px;" onclick="this.closest('div').parentElement.remove()">閉じる</button>
                 </div>`;
