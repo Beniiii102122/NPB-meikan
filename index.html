@@ -28,9 +28,9 @@
         .sidebar a, .sidebar .menu-item { padding: 15px 25px; text-decoration: none; font-size: 16px; color: #fff; display: block; border-bottom: 1px solid #444; cursor: pointer; }
         
         /* プルダウン内に入る注意事項のスタイリング */
-        .sidebar .notice-content { padding: 15px 25px; font-size: 12px; color: #ccc; line-height: 1.6; background: #2a2a2a; border-bottom: 1px solid #444; }
+        .notice-content { padding: 15px 25px; font-size: 12px; color: #ccc; line-height: 1.6; background: #2a2a2a; border-bottom: 1px solid #444; }
 
-        /* ✉ お問い合わせボタンのスタイリング */
+        /* お問い合わせボタンのスタイリング */
         .sidebar .contact-item { border-top: 1px solid #555; background-color: #333; color: #fff !important; font-weight: bold; }
 
         .openbtn { font-size: 16px; cursor: pointer; background: #333; color: white; padding: 8px 12px; border: none; position: fixed; top: 10px; left: 10px; z-index: 1000; border-radius: 4px; }
@@ -57,7 +57,7 @@
         .label { font-size: 9px; color: #999; margin-bottom: 2px; }
         .stats { font-size: 13px; font-weight: bold; color: #333; }
 
-        /* 🏠 ホーム画面のスタイル */
+        /* --- ホーム画面のスタイル --- */
         #home-screen { padding: 20px 10px; max-width: 800px; margin: 0 auto; }
         .home-title { text-align: center; font-size: 24px; font-weight: bold; margin: 40px 0 20px 0; }
         .league-title { font-size: 18px; font-weight: bold; margin: 20px 5px 10px 5px; padding-left: 8px; }
@@ -66,18 +66,36 @@
         .home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 25px; }
         .home-team-btn { background: #fff; padding: 15px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-bottom: 4px solid #ccc; transition: transform 0.1s; }
         .home-team-btn:active { transform: scale(0.95); }
+
+        /* 🆕 ホーム画面用フッターメニュー */
+        .home-footer-menu { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .home-menu-item { font-size: 16px; color: #333; text-decoration: none; cursor: pointer; font-weight: bold; }
+        .home-menu-item:hover { text-decoration: underline; }
+        .home-notice-content { max-width: 500px; width: 90%; background: #fff; padding: 15px 20px; font-size: 13px; color: #555; line-height: 1.6; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-top: -5px; box-sizing: border-box; text-align: left; }
     </style>
 </head>
 <body>
 
     <div id="home-screen">
-        <div class="home-title">⚾ NPB 選手名鑑 ⚾</div>
+        <div class="home-title">NPB 選手名鑑</div>
 
         <div class="league-title pa-title">パシフィック・リーグ</div>
         <div id="home-pa-grid" class="home-grid"></div>
 
         <div class="league-title ce-title">セントラル・リーグ</div>
         <div id="home-ce-grid" class="home-grid"></div>
+
+        <div class="home-footer-menu">
+            <div class="home-menu-item" onclick="toggleDropdown('home-notice-dropdown')">注意事項 ▼</div>
+            <div id="home-notice-dropdown" class="home-notice-content" style="display:none;">
+                ・成績については一軍の成績のみになります。<br><br>
+                ・成績が公式記録と違っている可能性があります。お気づきの点がございましたらお問い合わせ下さい。<br><br>
+                ・成績が更新されるタイミングは特に決まっておりません。<br><br>
+                ・2027年にはMLBの成績を掲載予定です。
+            </div>
+
+            <a href="https://forms.gle/RGfn64BjbfXaVZe78" target="_blank" class="home-menu-item">お問い合わせ</a>
+        </div>
     </div>
 
     <div id="main-content" style="display: none;">
@@ -85,7 +103,7 @@
 
         <div id="mySidebar" class="sidebar">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-            <div class="menu-item" style="color: #fff; background: #555; font-weight: bold;" onclick="showHome()">🏠 ホーム画面に戻る</div>
+            <div class="menu-item" style="color: #fff; background: #555; font-weight: bold;" onclick="showHome()">ホーム画面に戻る</div>
             
             <div class="menu-item" style="color: #00bfff;" onclick="toggleDropdown('pa-league')">パ・リーグ ▼</div>
             <div id="pa-league" style="display:none; background:#222;"></div>
@@ -100,7 +118,7 @@
                 ・2027年にはMLBの成績を掲載予定です。
             </div>
 
-            <a href="https://forms.gle/RGfn64BjbfXaVZe78" target="_blank" class="menu-item contact-item">✉ お問い合わせ</a>
+            <a href="https://forms.gle/RGfn64BjbfXaVZe78" target="_blank" class="menu-item contact-item">お問い合わせ</a>
         </div>
 
         <div id="main">
@@ -148,6 +166,11 @@
             const homePa = document.getElementById('home-pa-grid');
             const homeCe = document.getElementById('home-ce-grid');
             
+            pa.innerHTML = '';
+            ce.innerHTML = '';
+            homePa.innerHTML = '';
+            homeCe.innerHTML = '';
+
             Object.keys(TEAMS).forEach(k => {
                 const t = TEAMS[k];
                 
@@ -178,6 +201,7 @@
             closeNav();
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('home-screen').style.display = 'block';
+            document.getElementById('home-notice-dropdown').style.display = 'none';
         }
 
         async function switchTeam(key) {
