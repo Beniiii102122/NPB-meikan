@@ -49,28 +49,41 @@
         .notice-content { padding: 15px 25px; font-size: 12px; color: #ccc; line-height: 1.6; background: #2a2a2a; border-bottom: 1px solid #444; }
         .sidebar .contact-item { border-top: 1px solid #555; background-color: #333; color: #fff !important; font-weight: bold; }
         .openbtn { font-size: 16px; cursor: pointer; background: #333; color: white; padding: 8px 12px; border: none; position: fixed; top: 10px; left: 10px; z-index: 1000; border-radius: 4px; }
-        .header-container { text-align: center; padding: 45px 0 10px 0; }
+        
+        /* 👑 ヘッダータイトルとお気に入り星ボタン */
+        .header-container { text-align: center; padding: 45px 0 10px 0; display: flex; justify-content: center; align-items: center; gap: 8px; }
         #team-name-display { font-size: 20px; font-weight: bold; }
+        #fav-btn { font-size: 22px; cursor: pointer; background: none; border: none; padding: 0; line-height: 1; -webkit-tap-highlight-color: transparent; outline: none; }
 
-        .filter-area { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 auto; width: 95%; max-width: 500px; }
+        /* 🔍 検索＆フィルターエリア */
+        .filter-area { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 0 auto; width: 95%; max-width: 500px; }
         #player-search { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
         
+        /* 🎛️ フィルターチップ（ボタン） */
+        .filter-chips-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; padding: 2px 0; }
+        .filter-chip { background: #e0e0e0; color: #555; border: none; padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer; transition: all 0.15s ease; -webkit-tap-highlight-color: transparent; }
+        .filter-chip.active { background: var(--team-accent); color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        .filter-divider { width: 1px; background: #ccc; margin: 2px 4px; height: 20px; align-self: center; }
+
         .player-container { display: flex; flex-wrap: wrap; gap: 12px; padding: 15px 5px; justify-content: center; }
         
         /* 📇 カードの基本スタイル */
-        .player-card { background: #fff; border: 1px solid #ddd; padding: 28px 5px 12px 5px; width: 160px; min-height: 155px; text-align: center; cursor: pointer; position: relative; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.15s ease; }
+        .player-card { background: #fff; border: 1px solid #ddd; padding: 28px 5px 12px 5px; width: 160px; min-height: 165px; text-align: center; cursor: pointer; position: relative; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.15s ease; }
         .player-card:active { transform: scale(0.98); }
         
-        .number-badge { position: absolute; top: 8px; left: 8px; background: var(--team-accent); color: #fff; font-size: 11px; font-weight: bold; min-width: 24px; height: 24px; line-height: 24px; border-radius: 12px; padding: 0 4px; box-sizing: border-box; }
-        .army-badge { position: absolute; top: 8px; left: 38px; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; line-height: 1.3; }
+        /* 🔢 背番号バッジ（左上） */
+        .number-badge { position: absolute; top: 8px; left: 8px; background: var(--team-accent); color: #fff; font-size: 11px; font-weight: bold; min-width: 24px; height: 24px; line-height: 24px; border-radius: 12px; padding: 0 4px; box-sizing: border-box; text-align: center; }
+        
+        /* 🔄 個別切り替えボタン（背番号の下） */
+        .card-toggle-icon-btn { position: absolute; top: 36px; left: 8px; background: #ffffff; border: 1px solid #ccc; font-size: 12px; width: 24px; height: 24px; line-height: 22px; border-radius: 12px; cursor: pointer; color: #555; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.15s; }
+        .card-toggle-icon-btn:hover { background: #f0f0f0; color: #000; }
+
+        /* 🎖️ 一軍/二軍バッジ（右上） */
+        .army-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; line-height: 1.3; }
         .army-1f { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
         .army-2f { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
 
-        /* 🔄 カード別個別切り替えスイッチ */
-        .card-toggle-btn { position: absolute; top: 6px; right: 6px; background: #f0f0f0; border: 1px solid #ccc; font-size: 11px; font-weight: bold; padding: 3px 6px; border-radius: 4px; cursor: pointer; color: #555; z-index: 10; display: flex; align-items: center; gap: 2px; }
-        .card-toggle-btn:hover { background: #e5e5e5; color: #000; }
-
-        .name-wrapper { margin: 20px 0 10px 0; padding: 0 4px; display: flex; justify-content: center; align-items: center; min-height: 22px; }
+        .name-wrapper { margin: 25px 0 10px 0; padding: 0 4px; display: flex; justify-content: center; align-items: center; min-height: 22px; }
         .name { font-size: 18px; font-weight: bold; color: #000; line-height: 1.2; white-space: nowrap; }
         .name.len-4 { font-size: 16px; }
         .name.len-5 { font-size: 14px; }
@@ -105,7 +118,7 @@
             <div class="maintenance-icon">🛠️</div>
             <h1>臨時メンテナンスのお知らせ</h1>
             <p>ただいま、より快適にご利用いただくため、<br>システムの臨時メンテナンスを実施しております。</p>
-            <p style="font-weight: bold; margin-top: 20px; color: #111;">しばらくお待ち下さい。</p>
+            <p style="font-weight: bold; margin-top: 20px; color: #111;">しばらくお待ちください。</p>
         </div>
     </div>
 
@@ -152,9 +165,24 @@
             <div class="sticky-header">
                 <div class="header-container">
                     <div id="team-name-display">読み込み中...</div>
+                    <button id="fav-btn" onclick="toggleFavoriteTeam()">☆</button>
                 </div>
                 <div class="filter-area">
                     <input type="text" id="player-search" placeholder="選手名を検索..." oninput="applyFilters()">
+                    
+                    <div class="filter-chips-container">
+                        <button id="chip-all-army" class="filter-chip active" onclick="setArmyFilter('all')">全登録</button>
+                        <button id="chip-1f" class="filter-chip" onclick="setArmyFilter('一軍')">一軍</button>
+                        <button id="chip-2f" class="filter-chip" onclick="setArmyFilter('二軍')">二軍</button>
+                        
+                        <div class="filter-divider"></div>
+                        
+                        <button id="chip-all-pos" class="filter-chip active" onclick="setPosFilter('all')">全位置</button>
+                        <button id="chip-pitcher" class="filter-chip" onclick="setPosFilter('投手')">投手</button>
+                        <button id="chip-catcher" class="filter-chip" onclick="setPosFilter('捕手')">捕手</button>
+                        <button id="chip-infielder" class="filter-chip" onclick="setPosFilter('内野')">内野手</button>
+                        <button id="chip-outfielder" class="filter-chip" onclick="setPosFilter('外野')">外野手</button>
+                    </div>
                 </div>
             </div>
             <div id="container" class="player-container"></div>
@@ -162,7 +190,7 @@
     </div>
 
     <script>
-        // 🔑 管理者用パスワード（新パスワードに変更しました）
+        // 🔑 管理者用パスワード
         const ADMIN_PASSWORD = "kohki0825"; 
 
         const TEAMS = {
@@ -186,6 +214,9 @@
         let allPlayers = []; 
         let currentTeamKey = '';
         let isAuthorized = false; 
+
+        let activeArmyFilter = 'all';
+        let activePosFilter = 'all';
 
         let inputLog = "";
         window.addEventListener('keydown', (e) => {
@@ -248,7 +279,14 @@
                 if(t.league === 'pa') { pa.appendChild(d); homePa.appendChild(btn); } 
                 else { ce.appendChild(d); homeCe.appendChild(btn); }
             });
-            showHome();
+
+            // ⭐️ 初回起動時、お気に入り登録された球団があれば自動ジャンプ
+            const favTeam = localStorage.getItem('fav_team_key');
+            if (favTeam && TEAMS[favTeam]) {
+                switchTeam(favTeam);
+            } else {
+                showHome();
+            }
         }
 
         function showHome() {
@@ -266,6 +304,11 @@
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             document.getElementById('player-search').value = '';
+            
+            activeArmyFilter = 'all';
+            activePosFilter = 'all';
+            updateChipUI();
+            updateFavBtnUI(); // 星マークの見た目を更新
 
             document.getElementById('team-name-display').innerText = t.title;
             document.documentElement.style.setProperty('--team-accent', t.accent);
@@ -299,6 +342,30 @@
             } catch (e) { 
                 console.error(e); 
                 document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px; color:red;">データの読み込みに失敗しました。</p>';
+            }
+        }
+
+        // ⭐️ お気に入り登録・解除を切り替える処理
+        function toggleFavoriteTeam() {
+            const currentFav = localStorage.getItem('fav_team_key');
+            if (currentFav === currentTeamKey) {
+                localStorage.removeItem('fav_team_key'); // 解除
+            } else {
+                localStorage.setItem('fav_team_key', currentTeamKey); // 登録
+            }
+            updateFavBtnUI();
+        }
+
+        // ⭐️ 星ボタンの見た目（色の切り替え）処理
+        function updateFavBtnUI() {
+            const btn = document.getElementById('fav-btn');
+            const currentFav = localStorage.getItem('fav_team_key');
+            if (currentFav === currentTeamKey) {
+                btn.innerText = '⭐';
+                btn.style.color = '#ffcc00'; // 王道の黄色固定！
+            } else {
+                btn.innerText = '☆';
+                btn.style.color = '#aaa';
             }
         }
 
@@ -345,7 +412,7 @@
 
                 let toggleBtnHTML = '';
                 if (canSwitch) {
-                    toggleBtnHTML = `<button class="card-toggle-btn" data-toggle="true">🔄 投/野</button>`;
+                    toggleBtnHTML = `<button class="card-toggle-icon-btn">🔄</button>`;
                 }
 
                 card.innerHTML = `
@@ -362,7 +429,7 @@
                 `;
 
                 if (canSwitch) {
-                    const btn = card.querySelector('.card-toggle-btn');
+                    const btn = card.querySelector('.card-toggle-icon-btn');
                     btn.onclick = (e) => {
                         e.stopPropagation(); 
                         pObj.currentView = pObj.currentView === 'pitcher' ? 'batter' : 'pitcher';
@@ -426,10 +493,51 @@
             });
         }
 
+        function setArmyFilter(val) {
+            activeArmyFilter = val;
+            updateChipUI();
+            applyFilters();
+        }
+
+        function setPosFilter(val) {
+            activePosFilter = val;
+            updateChipUI();
+            applyFilters();
+        }
+
+        function updateChipUI() {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            
+            if (activeArmyFilter === 'all') document.getElementById('chip-all-army').classList.add('active');
+            else if (activeArmyFilter === '一軍') document.getElementById('chip-1f').classList.add('active');
+            else if (activeArmyFilter === '二軍') document.getElementById('chip-2f').classList.add('active');
+
+            if (activePosFilter === 'all') document.getElementById('chip-all-pos').classList.add('active');
+            else if (activePosFilter === '投手') document.getElementById('chip-pitcher').classList.add('active');
+            else if (activePosFilter === '捕手') document.getElementById('chip-catcher').classList.add('active');
+            else if (activePosFilter === '内野') document.getElementById('chip-infielder').classList.add('active');
+            else if (activePosFilter === '外野') document.getElementById('chip-outfielder').classList.add('active');
+        }
+
         function applyFilters() {
             const q = document.getElementById('player-search').value.toLowerCase();
+            
             const filtered = allPlayers.filter(pObj => {
-                return pObj.data[1].toLowerCase().includes(q);
+                const p = pObj.data;
+                if (!p[1].toLowerCase().includes(q)) return false;
+
+                const armyStr = p[25] || '';
+                if (activeArmyFilter !== 'all' && !armyStr.includes(activeArmyFilter)) return false;
+
+                const posStr = p[24] || '';
+                if (activePosFilter !== 'all') {
+                    if (activePosFilter === '投手') {
+                        if (!posStr.includes('投手') && !posStr.includes('先発') && !posStr.includes('中継') && !posStr.includes('抑え') && !posStr.includes('二刀流')) return false;
+                    } else {
+                        if (!posStr.includes(activePosFilter)) return false;
+                    }
+                }
+                return true;
             });
             render(filtered);
         }
