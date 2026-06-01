@@ -60,10 +60,10 @@
         #player-search { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
         
         /* 🎛️ フィルターチップ（ボタン） */
-        .filter-chips-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; padding: 2px 0; }
-        .filter-chip { background: #e0e0e0; color: #555; border: none; padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer; transition: all 0.15s ease; -webkit-tap-highlight-color: transparent; }
+        .filter-chips-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; width: 100%; padding: 2px 0; }
+        .filter-chip { background: #e0e0e0; color: #555; border: none; padding: 6px 10px; font-size: 11px; font-weight: bold; border-radius: 20px; cursor: pointer; transition: all 0.15s ease; -webkit-tap-highlight-color: transparent; }
         .filter-chip.active { background: var(--team-accent); color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-        .filter-divider { width: 1px; background: #ccc; margin: 2px 4px; height: 20px; align-self: center; }
+        .filter-divider { width: 1px; background: #ccc; margin: 2px 2px; height: 18px; align-self: center; }
 
         .player-container { display: flex; flex-wrap: wrap; gap: 12px; padding: 15px 5px; justify-content: center; }
         
@@ -180,8 +180,8 @@
                         <button id="chip-all-pos" class="filter-chip active" onclick="setPosFilter('all')">全位置</button>
                         <button id="chip-pitcher" class="filter-chip" onclick="setPosFilter('投手')">投手</button>
                         <button id="chip-catcher" class="filter-chip" onclick="setPosFilter('捕手')">捕手</button>
-                        <button id="chip-infielder" class="filter-chip" onclick="setPosFilter('内野')">内野手</button>
-                        <button id="chip-outfielder" class="filter-chip" onclick="setPosFilter('外野')">外野手</button>
+                        <button id="chip-infielder" class="filter-chip" onclick="setPosFilter('内野')">内野</button>
+                        <button id="chip-outfielder" class="filter-chip" onclick="setPosFilter('外野')">外野</button>
                     </div>
                 </div>
             </div>
@@ -190,7 +190,6 @@
     </div>
 
     <script>
-        // 🔑 管理者用パスワード
         const ADMIN_PASSWORD = "kohki0825"; 
 
         const TEAMS = {
@@ -208,8 +207,9 @@
             SWALLOWS: { id: '1BYL-hAJNaSshpWfDYnYsk9GdUIT9nEEIGejLuFV4BxY', name: 'ヤクルト', title: '東京ヤクルトスワローズ', accent: '#97c24a', league: 'ce' }
         };
 
-        const P_INDICES = [2,3,4,5,6,7,8,9,10,11,20,21]; 
-        const B_INDICES = [12,13,14,15,16,17,18,19,22,23]; 
+        // 📊 インデックスの定義（2番目の「試合数」は両方に入っている共通の項目）
+        const P_INDICES_WITHOUT_GAMES = [3,4,5,6,7,8,9,10,11,20,21]; // 試合数(2)以外の投手成績
+        const B_INDICES_WITHOUT_GAMES = [12,13,14,15,16,17,18,19,22,23]; // 試合数(2)以外の野手成績
 
         let allPlayers = []; 
         let currentTeamKey = '';
@@ -247,6 +247,7 @@
             return ` (${age}歳)`;
         }
 
+        // 0判定用の関数
         function isAllZero(player, indices) {
             return indices.every(idx => {
                 const val = player[idx];
@@ -280,7 +281,6 @@
                 else { ce.appendChild(d); homeCe.appendChild(btn); }
             });
 
-            // ⭐️ 初回起動時、お気に入り登録された球団があれば自動ジャンプ
             const favTeam = localStorage.getItem('fav_team_key');
             if (favTeam && TEAMS[favTeam]) {
                 switchTeam(favTeam);
@@ -308,7 +308,7 @@
             activeArmyFilter = 'all';
             activePosFilter = 'all';
             updateChipUI();
-            updateFavBtnUI(); // 星マークの見た目を更新
+            updateFavBtnUI(); 
 
             document.getElementById('team-name-display').innerText = t.title;
             document.documentElement.style.setProperty('--team-accent', t.accent);
@@ -345,24 +345,22 @@
             }
         }
 
-        // ⭐️ お気に入り登録・解除を切り替える処理
         function toggleFavoriteTeam() {
             const currentFav = localStorage.getItem('fav_team_key');
             if (currentFav === currentTeamKey) {
-                localStorage.removeItem('fav_team_key'); // 解除
+                localStorage.removeItem('fav_team_key'); 
             } else {
-                localStorage.setItem('fav_team_key', currentTeamKey); // 登録
+                localStorage.setItem('fav_team_key', currentTeamKey); 
             }
             updateFavBtnUI();
         }
 
-        // ⭐️ 星ボタンの見た目（色の切り替え）処理
         function updateFavBtnUI() {
             const btn = document.getElementById('fav-btn');
             const currentFav = localStorage.getItem('fav_team_key');
             if (currentFav === currentTeamKey) {
                 btn.innerText = '⭐';
-                btn.style.color = '#ffcc00'; // 王道の黄色固定！
+                btn.style.color = '#ffcc00'; 
             } else {
                 btn.innerText = '☆';
                 btn.style.color = '#aaa';
@@ -387,9 +385,12 @@
                 else if (playerName.length === 6) lenClass = 'len-6';
                 else if (playerName.length >= 7) lenClass = 'len-long';
 
-                const noPitcherData = isAllZero(p, P_INDICES);
-                const noBatterData = isAllZero(p, B_INDICES);
-                const canSwitch = !(noPitcherData || noBatterData); 
+                // ⚡「試合数以外」で数値が入っているかどうかを細かく判定！
+                const hasPitcherDataWithoutGames = !isAllZero(p, P_INDICES_WITHOUT_GAMES);
+                const hasBatterDataWithoutGames = !isAllZero(p, B_INDICES_WITHOUT_GAMES);
+                
+                // 両方の「試合数以外のデータ」が揃っている場合に切り替え可能とする
+                const canSwitch = (hasPitcherDataWithoutGames && hasBatterDataWithoutGames); 
 
                 let l1, s1, l2, s2, l3, s3, modeName;
                 if (pObj.currentView === 'pitcher') {
@@ -408,7 +409,7 @@
 
                 const card = document.createElement('div');
                 card.className = `player-card`;
-                card.onclick = () => showDetail(pObj);
+                card.onclick = () => showDetail(pObj, canSwitch);
 
                 let toggleBtnHTML = '';
                 if (canSwitch) {
@@ -441,13 +442,9 @@
             });
         }
 
-        function showDetail(pObj) {
+        function showDetail(pObj, canSwitch) {
             const d = pObj.data;
             const pos = d[24] || '----'; const army = d[25] || '----'; const birth = d[26] ? d[26] : '----/--/--'; const hometown = d[27] ? d[27] : '----'; const ageStr = calculateAge(d[26]);
-            
-            const noPitcherData = isAllZero(d, P_INDICES);
-            const noBatterData = isAllZero(d, B_INDICES);
-            const canSwitch = !(noPitcherData || noBatterData);
 
             const modal = document.createElement('div');
             modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:2000;";
