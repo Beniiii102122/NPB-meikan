@@ -19,27 +19,6 @@
             padding-bottom: 50px; 
         }
 
-        /* 🚧 メンテナンス画面のスタイル */
-        #maintenance-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-        .maintenance-container {
-            background: #fff;
-            padding: 40px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 450px;
-            width: 90%;
-            border-top: 5px solid #333;
-        }
-        .maintenance-container h1 { font-size: 22px; margin-bottom: 20px; }
-        .maintenance-container p { font-size: 14px; color: #666; line-height: 1.6; }
-        .maintenance-icon { font-size: 48px; margin-bottom: 15px; }
-
         /* --- メインコンテンツ --- */
         #main-content { display: none; }
 
@@ -95,6 +74,11 @@
         .stats { font-size: 13px; font-weight: bold; color: #111; }
         .mode-indicator { font-size: 8px; color: #aaa; margin-top: 2px; text-align: center; font-weight: normal; }
 
+        /* 📋 モーダル内の成績表示用スタイル */
+        .modal-stat-box { background: #f8f8f8; padding: 10px; border-radius: 4px; text-align: center; border: 1px solid #eee; }
+        .modal-stat-label { font-size: 11px; color: #888; margin-bottom: 2px; }
+        .modal-stat-value { font-size: 18px; font-weight: bold; color: #111; }
+
         /* --- ホーム画面のスタイル --- */
         #home-screen { display: none; padding: 20px 10px; max-width: 800px; margin: 0 auto; }
         .home-title { text-align: center; font-size: 24px; font-weight: bold; margin: 40px 0 20px 0; }
@@ -112,15 +96,6 @@
     </style>
 </head>
 <body>
-
-    <div id="maintenance-screen">
-        <div class="maintenance-container">
-            <div class="maintenance-icon">🛠️</div>
-            <h1>臨時メンテナンスのお知らせ</h1>
-            <p>ただいま、より快適にご利用いただくため、<br>システムの臨時メンテナンスを実施しております。</p>
-            <p style="font-weight: bold; margin-top: 20px; color: #111;">しばらくお待ちください。</p>
-        </div>
-    </div>
 
     <div id="home-screen">
         <div class="home-title">NPB 選手名鑑</div>
@@ -190,8 +165,6 @@
     </div>
 
     <script>
-        const ADMIN_PASSWORD = "kohki0825"; 
-
         const TEAMS = {
             SOFTBANK: { id: '1D55MmUmSxxvDf92UE_N0N3BTSrZOoR5qQxoXm_BL2_E', name: 'ソフトバンク', title: '福岡ソフトバンクホークス', accent: '#ffcc00', league: 'pa' },
             FIGHTERS: { id: '14Nd-iWKpiJg7M0Ou2NG0bgARZHJY-JIdARiWCwVTmjM', name: '日本ハム', title: '北海道日本ハムファイターズ', accent: '#005491', league: 'pa' },
@@ -207,34 +180,14 @@
             SWALLOWS: { id: '1BYL-hAJNaSshpWfDYnYsk9GdUIT9nEEIGejLuFV4BxY', name: 'ヤクルト', title: '東京ヤクルトスワローズ', accent: '#97c24a', league: 'ce' }
         };
 
-        // 📊 インデックスの定義（2番目の「試合数」は両方に入っている共通の項目）
-        const P_INDICES_WITHOUT_GAMES = [3,4,5,6,7,8,9,10,11,20,21]; // 試合数(2)以外の投手成績
-        const B_INDICES_WITHOUT_GAMES = [12,13,14,15,16,17,18,19,22,23]; // 試合数(2)以外の野手成績
+        const P_INDICES_WITHOUT_GAMES = [3,4,5,6,7,8,9,10,11,20,21]; 
+        const B_INDICES_WITHOUT_GAMES = [12,13,14,15,16,17,18,19,22,23]; 
 
         let allPlayers = []; 
         let currentTeamKey = '';
-        let isAuthorized = false; 
 
         let activeArmyFilter = 'all';
         let activePosFilter = 'all';
-
-        let inputLog = "";
-        window.addEventListener('keydown', (e) => {
-            if (isAuthorized) return;
-            inputLog += e.key.toLowerCase();
-            if (inputLog.endsWith("open")) {
-                inputLog = "";
-                const pass = prompt("管理者用パスワードを入力してください:");
-                if (pass === ADMIN_PASSWORD) {
-                    isAuthorized = true;
-                    document.getElementById('maintenance-screen').style.display = 'none';
-                    init(); 
-                } else if (pass !== null) {
-                    alert("パスワードが違います。");
-                }
-            }
-            if (inputLog.length > 20) inputLog = inputLog.slice(-10);
-        });
 
         function calculateAge(birthStr) {
             if (!birthStr || birthStr.includes('---')) return '';
@@ -247,7 +200,6 @@
             return ` (${age}歳)`;
         }
 
-        // 0判定用の関数
         function isAllZero(player, indices) {
             return indices.every(idx => {
                 const val = player[idx];
@@ -257,9 +209,12 @@
             });
         }
 
-        function init() {
-            if (!isAuthorized) return; 
+        // 🚀 起動時に自動で初期化を実行
+        window.addEventListener('DOMContentLoaded', () => {
+            init();
+        });
 
+        function init() {
             const pa = document.getElementById('pa-league');
             const ce = document.getElementById('ce-league');
             const homePa = document.getElementById('home-pa-grid');
@@ -385,11 +340,8 @@
                 else if (playerName.length === 6) lenClass = 'len-6';
                 else if (playerName.length >= 7) lenClass = 'len-long';
 
-                // ⚡「試合数以外」で数値が入っているかどうかを細かく判定！
                 const hasPitcherDataWithoutGames = !isAllZero(p, P_INDICES_WITHOUT_GAMES);
                 const hasBatterDataWithoutGames = !isAllZero(p, B_INDICES_WITHOUT_GAMES);
-                
-                // 両方の「試合数以外のデータ」が揃っている場合に切り替え可能とする
                 const canSwitch = (hasPitcherDataWithoutGames && hasBatterDataWithoutGames); 
 
                 let l1, s1, l2, s2, l3, s3, modeName;
@@ -451,14 +403,59 @@
             modal.onclick = () => modal.remove();
             
             function generateModalContent(targetMode) {
-                let items = [];
-                if (targetMode === 'pitcher') {
-                    items = [{l:'防御率', v:d[20]}, {l:'登板', v:d[2]}, {l:'勝利', v:d[3]}, {l:'敗戦', v:d[4]}, {l:'ホールド', v:d[5]}, {l:'セーブ', v:d[6]}, {l:'奪三振', v:d[9]}, {l:'WHIP', v:d[21]}];
-                } else {
-                    items = [{l:'打率', v:d[22]}, {l:'試合', v:d[2]}, {l:'本塁打', v:d[14]}, {l:'打点', v:d[15]}, {l:'盗塁', v:d[19]}, {l:'OPS', v:d[23]}];
-                }
+                let statsHTML = '';
                 
-                const statsHTML = items.map(i => `<div style="background:#f8f8f8;padding:10px;border-radius:4px;text-align:center;border:1px solid #eee;"><div style="font-size:10px;color:#999;">${i.l}</div><div style="font-size:18px;font-weight:bold;">${i.v}</div></div>`).join('');
+                if (targetMode === 'pitcher') {
+                    const items = [
+                        {l:'防御率', v:d[20]}, {l:'登板', v:d[2]}, 
+                        {l:'勝利', v:d[3]},   {l:'敗戦', v:d[4]}, 
+                        {l:'ホールド', v:d[5]}, {l:'セーブ', v:d[6]}, 
+                        {l:'奪三振', v:d[9]},   {l:'WHIP', v:d[21]}
+                    ];
+                    const gridItems = items.map(i => `
+                        <div class="modal-stat-box">
+                            <div class="modal-stat-label">${i.l}</div>
+                            <div class="modal-stat-value">${i.v}</div>
+                        </div>
+                    `).join('');
+                    statsHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${gridItems}</div>`;
+                } else {
+                    statsHTML = `
+                        <div style="flex-direction: column; gap: 8px; display: flex;">
+                            <div class="modal-stat-box" style="width: 100%; box-sizing: border-box;">
+                                <div class="modal-stat-label">打率（打数-安打）</div>
+                                <div class="modal-stat-value">${d[22]} <span style="font-size: 14px; font-weight: normal; color: #666;">(${d[12]}-${d[13]})</span></div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <div class="modal-stat-box">
+                                    <div class="modal-stat-label">試合数</div>
+                                    <div class="modal-stat-value">${d[2]}</div>
+                                </div>
+                                <div class="modal-stat-box">
+                                    <div class="modal-stat-label">本塁打</div>
+                                    <div class="modal-stat-value">${d[14]}</div>
+                                </div>
+                                <div class="modal-stat-box">
+                                    <div class="modal-stat-label">打点</div>
+                                    <div class="modal-stat-value">${d[15]}</div>
+                                </div>
+                                <div class="modal-stat-box">
+                                    <div class="modal-stat-label">四死球</div>
+                                    <div class="modal-stat-value">${d[17]}</div>
+                                </div>
+                                <div class="modal-stat-box">
+                                    <div class="modal-stat-label">盗塁</div>
+                                    <div class="modal-stat-value">${d[19]}</div>
+                                </div>
+                                <div class="modal-stat-box">
+                                    <div class="modal-stat-label">OPS</div>
+                                    <div class="modal-stat-value">${d[23]}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
                 
                 let switchBtnHTML = '';
                 if (canSwitch) {
@@ -472,7 +469,7 @@
                         <div style="font-size:22px;font-weight:bold;margin-bottom:2px;border-bottom:2px solid var(--team-accent);">${d[1]}</div>
                         <div style="font-size:12px;color:#666;margin-top:5px;">生年月日: ${birth}${ageStr}</div>
                         <div style="font-size:12px;color:#666;margin-bottom:15px;font-weight:bold;">出身地: ${hometown}</div>
-                        <div id="modal-stats-wrapper" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${statsHTML}</div>
+                        <div id="modal-stats-wrapper">${statsHTML}</div>
                         ${switchBtnHTML}
                         <button style="width:100%;margin-top:10px;padding:12px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;" onclick="this.closest('div').parentElement.remove()">閉じる</button>
                     </div>`;
