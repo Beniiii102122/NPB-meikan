@@ -40,10 +40,10 @@
         .maintenance-container p { font-size: 14px; color: #666; line-height: 1.6; }
         .maintenance-icon { font-size: 48px; margin-bottom: 15px; }
 
-        /* --- メインコンテンツ（通常は非表示） --- */
+        /* --- メインコンテンツ --- */
         #main-content { display: none; }
 
-        .sticky-header { position: sticky; top: 0; z-index: 900; background: #fff; padding-bottom: 12px; border-bottom: 2px solid var(--team-accent); }
+        .sticky-header { position: sticky; top: 0; z-index: 900; background: #fff; padding-bottom: 12px; border-bottom: 2px solid var(--team-accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; }
         .sidebar a, .sidebar .menu-item { padding: 15px 25px; text-decoration: none; font-size: 16px; color: #fff; display: block; border-bottom: 1px solid #444; cursor: pointer; }
         .notice-content { padding: 15px 25px; font-size: 12px; color: #ccc; line-height: 1.6; background: #2a2a2a; border-bottom: 1px solid #444; }
@@ -52,23 +52,23 @@
         .header-container { text-align: center; padding: 45px 0 10px 0; }
         #team-name-display { font-size: 20px; font-weight: bold; }
 
-        .mode-toggle-container { display: flex; justify-content: center; margin-bottom: 12px; }
-        .mode-toggle { display: flex; background: #eee; padding: 4px; border-radius: 25px; border: 1px solid #ddd; width: 85%; max-width: 300px; box-sizing: border-box; }
-        .mode-btn { flex: 1; text-align: center; padding: 8px 0; font-size: 14px; font-weight: bold; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; color: #666; }
-        .mode-btn.active.pitcher-mode { background: var(--team-accent); color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-        .mode-btn.active.batter-mode { background: #111; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-
         .filter-area { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 auto; width: 95%; max-width: 500px; }
         #player-search { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
-        .player-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px 5px; justify-content: center; }
         
-        .player-card { background: #fff; border: 1px solid #ddd; padding: 25px 5px 12px 5px; width: 160px; min-height: 155px; text-align: center; cursor: pointer; position: relative; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; container-type: inline-size; }
-        .player-card.batter-card { border-color: #bbb; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
+        .player-container { display: flex; flex-wrap: wrap; gap: 12px; padding: 15px 5px; justify-content: center; }
+        
+        /* 📇 カードの基本スタイル */
+        .player-card { background: #fff; border: 1px solid #ddd; padding: 28px 5px 12px 5px; width: 160px; min-height: 155px; text-align: center; cursor: pointer; position: relative; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.15s ease; }
+        .player-card:active { transform: scale(0.98); }
+        
         .number-badge { position: absolute; top: 8px; left: 8px; background: var(--team-accent); color: #fff; font-size: 11px; font-weight: bold; min-width: 24px; height: 24px; line-height: 24px; border-radius: 12px; padding: 0 4px; box-sizing: border-box; }
-        .number-badge.batter-badge { background: #111; }
-        .army-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; line-height: 1.2; }
+        .army-badge { position: absolute; top: 8px; left: 38px; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; line-height: 1.3; }
         .army-1f { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
         .army-2f { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
+
+        /* 🔄 カード別個別切り替えスイッチ */
+        .card-toggle-btn { position: absolute; top: 6px; right: 6px; background: #f0f0f0; border: 1px solid #ccc; font-size: 11px; font-weight: bold; padding: 3px 6px; border-radius: 4px; cursor: pointer; color: #555; z-index: 10; display: flex; align-items: center; gap: 2px; }
+        .card-toggle-btn:hover { background: #e5e5e5; color: #000; }
 
         .name-wrapper { margin: 20px 0 10px 0; padding: 0 4px; display: flex; justify-content: center; align-items: center; min-height: 22px; }
         .name { font-size: 18px; font-weight: bold; color: #000; line-height: 1.2; white-space: nowrap; }
@@ -77,9 +77,10 @@
         .name.len-6 { font-size: 12px; }
         .name.len-long { font-size: 10px; } 
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; margin-top: auto; background: #f8f8f8; padding: 6px 0; border-radius: 4px; }
-        .label { font-size: 9px; color: #999; margin-bottom: 2px; }
-        .stats { font-size: 13px; font-weight: bold; color: #333; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; margin-top: auto; background: #f8f8f8; padding: 6px 0; border-radius: 4px; border-top: 1px dashed #eee; }
+        .label { font-size: 9px; color: #888; margin-bottom: 2px; }
+        .stats { font-size: 13px; font-weight: bold; color: #111; }
+        .mode-indicator { font-size: 8px; color: #aaa; margin-top: 2px; text-align: center; font-weight: normal; }
 
         /* --- ホーム画面のスタイル --- */
         #home-screen { display: none; padding: 20px 10px; max-width: 800px; margin: 0 auto; }
@@ -152,12 +153,6 @@
                 <div class="header-container">
                     <div id="team-name-display">読み込み中...</div>
                 </div>
-                <div class="mode-toggle-container">
-                    <div class="mode-toggle">
-                        <div id="btn-pitcher" class="mode-btn active pitcher-mode" onclick="changeDisplayMode('pitcher')">【表】投手名鑑</div>
-                        <div id="btn-batter" class="mode-btn batter-mode" onclick="changeDisplayMode('batter')">【裏】野手名鑑</div>
-                    </div>
-                </div>
                 <div class="filter-area">
                     <input type="text" id="player-search" placeholder="選手名を検索..." oninput="applyFilters()">
                 </div>
@@ -167,8 +162,8 @@
     </div>
 
     <script>
-        // 🔑 管理者用パスワード
-        const ADMIN_PASSWORD = "admin123"; 
+        // 🔑 管理者用パスワード（新パスワードに変更しました）
+        const ADMIN_PASSWORD = "kohki0825"; 
 
         const TEAMS = {
             SOFTBANK: { id: '1D55MmUmSxxvDf92UE_N0N3BTSrZOoR5qQxoXm_BL2_E', name: 'ソフトバンク', title: '福岡ソフトバンクホークス', accent: '#ffcc00', league: 'pa' },
@@ -185,19 +180,19 @@
             SWALLOWS: { id: '1BYL-hAJNaSshpWfDYnYsk9GdUIT9nEEIGejLuFV4BxY', name: 'ヤクルト', title: '東京ヤクルトスワローズ', accent: '#97c24a', league: 'ce' }
         };
 
+        const P_INDICES = [2,3,4,5,6,7,8,9,10,11,20,21]; 
+        const B_INDICES = [12,13,14,15,16,17,18,19,22,23]; 
+
         let allPlayers = []; 
-        let currentMode = 'pitcher'; 
         let currentTeamKey = '';
         let isAuthorized = false; 
 
-        // ⌨️ 「open」と打ったら反応する簡易隠しコマンド判定
         let inputLog = "";
         window.addEventListener('keydown', (e) => {
             if (isAuthorized) return;
-            // 押しやすい小文字で判定
             inputLog += e.key.toLowerCase();
             if (inputLog.endsWith("open")) {
-                inputLog = ""; // ログクリア
+                inputLog = "";
                 const pass = prompt("管理者用パスワードを入力してください:");
                 if (pass === ADMIN_PASSWORD) {
                     isAuthorized = true;
@@ -207,7 +202,6 @@
                     alert("パスワードが違います。");
                 }
             }
-            // 誤入力を想定し履歴が長くなりすぎないように制限
             if (inputLog.length > 20) inputLog = inputLog.slice(-10);
         });
 
@@ -220,6 +214,15 @@
             const m = today.getMonth() - birthDate.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
             return ` (${age}歳)`;
+        }
+
+        function isAllZero(player, indices) {
+            return indices.every(idx => {
+                const val = player[idx];
+                if (!val) return true;
+                const num = parseFloat(val);
+                return isNaN(num) || num === 0;
+            });
         }
 
         function init() {
@@ -255,21 +258,8 @@
             document.getElementById('home-notice-dropdown').style.display = 'none';
         }
 
-        function changeDisplayMode(mode) {
-            currentMode = mode;
-            const btnP = document.getElementById('btn-pitcher');
-            const btnB = document.getElementById('btn-batter');
-            if (mode === 'pitcher') {
-                btnP.classList.add('active'); btnB.classList.remove('active');
-            } else {
-                btnB.classList.add('active'); btnP.classList.remove('active');
-            }
-            applyFilters();
-        }
-
         async function switchTeam(key) {
             currentTeamKey = key;
-            localStorage.setItem('favTeam', key);
             const t = TEAMS[key];
             closeNav();
 
@@ -281,8 +271,6 @@
             document.documentElement.style.setProperty('--team-accent', t.accent);
             document.getElementById('container').innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">データを読み込み中...</p>';
             
-            changeDisplayMode('pitcher');
-
             try {
                 const encodedSheet = encodeURIComponent('シート1');
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${t.id}/gviz/tq?tqx=out:csv&sheet=${encodedSheet}`);
@@ -298,7 +286,15 @@
                     return String(a[0]).localeCompare(String(b[0]), undefined, { numeric: true, sensitivity: 'base' });
                 });
 
-                allPlayers = parsed;
+                allPlayers = parsed.map(p => {
+                    const pos = p[24] || '';
+                    let initialMode = 'batter';
+                    if (pos.includes("投手") || pos.includes("二刀流") || pos.includes("先発") || pos.includes("中継") || pos.includes("抑え")) {
+                        initialMode = 'pitcher';
+                    }
+                    return { data: p, currentView: initialMode };
+                });
+
                 applyFilters();
             } catch (e) { 
                 console.error(e); 
@@ -306,90 +302,90 @@
             }
         }
 
-        function render(data) {
+        function render(playerObjects) {
             const c = document.getElementById('container'); c.innerHTML = '';
-            if(data.length === 0) {
+            if(playerObjects.length === 0) {
                 c.innerHTML = '<p style="text-align:center; width:100%; margin-top:30px; color:#999;">該当する選手がいません</p>';
                 return;
             }
-            data.forEach(p => {
-                const playerName = p[1] || ''; const army = p[25] || '----'; 
+
+            playerObjects.forEach(pObj => {
+                const p = pObj.data;
+                const playerName = p[1] || ''; 
+                const army = p[25] || '----'; 
+
                 let lenClass = '';
                 if (playerName.length === 4) lenClass = 'len-4';
                 else if (playerName.length === 5) lenClass = 'len-5';
                 else if (playerName.length === 6) lenClass = 'len-6';
                 else if (playerName.length >= 7) lenClass = 'len-long';
 
-                let l1, s1, l2, s2, l3, s3;
-                let cardModeClass = ''; let badgeModeClass = '';
+                const noPitcherData = isAllZero(p, P_INDICES);
+                const noBatterData = isAllZero(p, B_INDICES);
+                const canSwitch = !(noPitcherData || noBatterData); 
 
-                if (currentMode === 'pitcher') {
+                let l1, s1, l2, s2, l3, s3, modeName;
+                if (pObj.currentView === 'pitcher') {
                     l1 = '防御率'; s1 = p[20]; 
                     l2 = '勝利';   s2 = p[3];  
                     l3 = '敗戦';   s3 = p[4];  
+                    modeName = '投手成績';
                 } else {
-                    cardModeClass = 'batter-card'; badgeModeClass = 'batter-badge';
                     l1 = '打率';   s1 = p[22]; 
                     l2 = '本塁打'; s2 = p[14]; 
                     l3 = '打点';   s3 = p[15]; 
+                    modeName = '野手成績';
                 }
 
                 let armyClass = 'army-2f'; if (army.includes('一軍')) armyClass = 'army-1f';
 
                 const card = document.createElement('div');
-                card.className = `player-card ${cardModeClass}`;
-                card.onclick = () => showDetail(p);
+                card.className = `player-card`;
+                card.onclick = () => showDetail(pObj);
+
+                let toggleBtnHTML = '';
+                if (canSwitch) {
+                    toggleBtnHTML = `<button class="card-toggle-btn" data-toggle="true">🔄 投/野</button>`;
+                }
+
                 card.innerHTML = `
-                    <div class="number-badge ${badgeModeClass}">${p[0]}</div>
+                    <div class="number-badge">${p[0]}</div>
                     <div class="army-badge ${armyClass}">${army}</div>
+                    ${toggleBtnHTML}
                     <div class="name-wrapper"><div class="name ${lenClass}">${playerName}</div></div>
                     <div class="stats-grid">
                         <div><div class="label">${l1}</div><div class="stats">${s1}</div></div>
                         <div><div class="label">${l2}</div><div class="stats">${s2}</div></div>
                         <div><div class="label">${l3}</div><div class="stats">${s3}</div></div>
-                    </div>`;
+                    </div>
+                    <div class="mode-indicator">${modeName}</div>
+                `;
+
+                if (canSwitch) {
+                    const btn = card.querySelector('.card-toggle-btn');
+                    btn.onclick = (e) => {
+                        e.stopPropagation(); 
+                        pObj.currentView = pObj.currentView === 'pitcher' ? 'batter' : 'pitcher';
+                        applyFilters(); 
+                    };
+                }
+
                 c.appendChild(card);
             });
         }
 
-        // 📊 指定された成績データグループがすべてゼロ（または空）かを調べる関数
-        function isAllZero(player, indices) {
-            return indices.every(idx => {
-                const val = player[idx];
-                if (!val) return true;
-                const num = parseFloat(val);
-                return isNaN(num) || num === 0;
-            });
-        }
-
-        function showDetail(d) {
+        function showDetail(pObj) {
+            const d = pObj.data;
             const pos = d[24] || '----'; const army = d[25] || '----'; const birth = d[26] ? d[26] : '----/--/--'; const hometown = d[27] ? d[27] : '----'; const ageStr = calculateAge(d[26]);
             
-            // 投手成績（インデックス群）
-            const pIndices = [2,3,4,5,6,7,8,9,10,11,20,21]; // 試合数,勝利,敗戦,ホールド,セーブ,アウト数,被安打,奪三振,与四球,自責点,防御率,WHIP
-            // 野手成績（インデックス群）
-            const bIndices = [12,13,14,15,16,17,18,19,22,23]; // 打数,安打,本塁打,打点,塁打,四死球,犠飛,盗塁,打率,OPS
-
-            const noPitcherData = isAllZero(d, pIndices);
-            const noBatterData = isAllZero(d, bIndices);
-
-            // 👑 ポジションとデータの有無から、最初の画面（表）と隠す画面（裏）を完全に自動判別する
-            let primaryMode = 'pitcher';
-            let canSwitch = true; // 切り替えボタンを表示するかフラグ
-
-            if (pos.includes("投手") || pos.includes("二刀流") || pos.includes("先発") || pos.includes("中継") || pos.includes("抑え")) {
-                primaryMode = 'pitcher';
-                if (noBatterData) canSwitch = false; // 野手成績が全部0なら裏（野手）への切り替え不可
-            } else {
-                primaryMode = 'batter';
-                if (noPitcherData) canSwitch = false; // 投手成績が全部0なら裏（投手）への切り替え不可
-            }
+            const noPitcherData = isAllZero(d, P_INDICES);
+            const noBatterData = isAllZero(d, B_INDICES);
+            const canSwitch = !(noPitcherData || noBatterData);
 
             const modal = document.createElement('div');
             modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:2000;";
             modal.onclick = () => modal.remove();
             
-            // モーダル表示を生成する内包関数
             function generateModalContent(targetMode) {
                 let items = [];
                 if (targetMode === 'pitcher') {
@@ -400,11 +396,9 @@
                 
                 const statsHTML = items.map(i => `<div style="background:#f8f8f8;padding:10px;border-radius:4px;text-align:center;border:1px solid #eee;"><div style="font-size:10px;color:#999;">${i.l}</div><div style="font-size:18px;font-weight:bold;">${i.v}</div></div>`).join('');
                 
-                // 切り替えボタンのHTML（条件を満たす時だけ表示）
                 let switchBtnHTML = '';
                 if (canSwitch) {
                     const nextModeName = targetMode === 'pitcher' ? '【裏】野手成績を見る' : '【裏】投手成績を見る';
-                    const nextModeParam = targetMode === 'pitcher' ? 'batter' : 'pitcher';
                     switchBtnHTML = `<button id="modal-toggle-btn" style="width:100%;margin-top:15px;padding:10px;background:var(--team-accent);color:#fff;border:1px solid #fff;border-radius:4px;font-weight:bold;cursor:pointer;">${nextModeName}</button>`;
                 }
 
@@ -420,12 +414,10 @@
                     </div>`;
             }
 
-            // 初回描画
-            modal.innerHTML = generateModalContent(primaryMode);
+            let currentViewMode = pObj.currentView;
+            modal.innerHTML = generateModalContent(currentViewMode);
             document.body.appendChild(modal);
 
-            // 表裏切り替えイベントのバインド（ボタンが存在する場合のみ）
-            let currentViewMode = primaryMode;
             modal.addEventListener('click', (e) => {
                 if (e.target && e.target.id === 'modal-toggle-btn') {
                     currentViewMode = currentViewMode === 'pitcher' ? 'batter' : 'pitcher';
@@ -436,17 +428,8 @@
 
         function applyFilters() {
             const q = document.getElementById('player-search').value.toLowerCase();
-            
-            const filtered = allPlayers.filter(p => {
-                const nameMatch = p[1].includes(q);
-                if (!nameMatch) return false;
-
-                const posStr = p[24] || '';
-                if (currentMode === 'pitcher') {
-                    return posStr.includes("投手") || posStr.includes("先発") || posStr.includes("中継") || posStr.includes("抑え") || posStr.includes("二刀流");
-                } else {
-                    return posStr.includes("内野") || posStr.includes("外野") || posStr.includes("捕手") || posStr.includes("二刀流");
-                }
+            const filtered = allPlayers.filter(pObj => {
+                return pObj.data[1].toLowerCase().includes(q);
             });
             render(filtered);
         }
