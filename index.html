@@ -209,7 +209,6 @@
             });
         }
 
-        // 🚀 起動時に自動で初期化を実行
         window.addEventListener('DOMContentLoaded', () => {
             init();
         });
@@ -274,14 +273,28 @@
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${t.id}/gviz/tq?tqx=out:csv&sheet=${encodedSheet}`);
                 if (!res.ok) throw new Error();
                 const text = await res.text();
-                const rows = text.split(/\r?\n/).filter(r => r.trim() !== "").slice(1);
+                
+                // 確実に空行と見出し（「背番号」などの文字が含まれる行）を1行目以外でも綺麗に除外
+                let rows = text.split(/\r?\n/)
+                               .filter(r => r.trim() !== "")
+                               .slice(1);
                 
                 let parsed = rows.map(r => r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(c => c.replace(/^"|"$/g, '')));
                 
+                // 「背番号」などの文字が入っている余分なヘッダーデータを念のため完全に消去
+                parsed = parsed.filter(p => p[0] && p[1] && p[0] !== '背番号');
+
+                // 🔄 背番号のソート処理を強化（0や00、育成選手もバグらず綺麗に若い順に並ぶように調整）
                 parsed.sort((a, b) => {
-                    const numA = parseInt(a[0], 10); const numB = parseInt(b[0], 10);
-                    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-                    return String(a[0]).localeCompare(String(b[0]), undefined, { numeric: true, sensitivity: 'base' });
+                    const numA = parseInt(a[0], 10);
+                    const numB = parseInt(b[0], 10);
+                    
+                    if (isNaN(numA) && isNaN(numB)) return String(a[0]).localeCompare(String(b[0]));
+                    if (isNaN(numA)) return 1; 
+                    if (isNaN(numB)) return -1;
+                    
+                    if (numA !== numB) return numA - numB;
+                    return String(a[0]).localeCompare(String(b[0]));
                 });
 
                 allPlayers = parsed.map(p => {
