@@ -419,7 +419,7 @@
             modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:2000;";
             modal.onclick = () => {
                 modal.remove();
-                applyFilters(); // 詳細画面を閉じた時に一覧の表示状態（投手/野手）と同期する
+                applyFilters(); 
             };
             
             function generateModalContent(targetMode) {
@@ -479,7 +479,6 @@
                 
                 let switchBtnHTML = '';
                 if (canSwitch) {
-                    // 詳細画面の右上に配置する丸い「🔄」切り替えボタン
                     switchBtnHTML = `<button id="modal-toggle-btn" class="modal-toggle-icon-btn">🔄</button>`;
                 }
 
@@ -502,10 +501,12 @@
             modal.innerHTML = generateModalContent(currentViewMode);
             document.body.appendChild(modal);
 
+            // 🛠️ 親要素(modal)でのイベントリスナーを修正
             modal.addEventListener('click', (e) => {
                 if (e.target && e.target.id === 'modal-toggle-btn') {
+                    e.stopPropagation(); // 💥 画面が閉じるバブリングを完全にストップ
                     currentViewMode = currentViewMode === 'pitcher' ? 'batter' : 'pitcher';
-                    pObj.currentView = currentViewMode; // 選択状態を保持
+                    pObj.currentView = currentViewMode; 
                     modal.innerHTML = generateModalContent(currentViewMode);
                 }
             });
