@@ -277,17 +277,36 @@
                 if (!res.ok) throw new Error();
                 const text = await res.text();
                 
-                // 確実に空行と見出し（「背番号」などの文字が含まれる行）を1行目以外でも綺麗に除外
-                let rows = text.split(/\r?\n/)
-                               .filter(r => r.trim() !== "")
-                               .slice(1);
-                
-                let parsed = rows.map(r => r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(c => c.replace(/^"|"$/g, '')));
-                
-                // 「背番号」などの文字が入っている余分なヘッダーデータを念のため完全に消去
-                parsed = parsed.filter(p => p[0] && p[1] && p[0] !== '背番号');
+                // 🛠️ 改良された堅牢なCSVパーサー（ダブルクォーテーション内のカンマや改行に対応）
+                let lines = [];
+                let row = [""];
+                let inQuotes = false;
 
-                // 🔄 背番号のソート処理を強化（0や00、育成選手もバグらず綺麗に若い順に並ぶように調整）
+                for (let i = 0; i < text.length; i++) {
+                    let c = text[i];
+                    let next = text[i+1];
+                    if (c === '"') {
+                        if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; } 
+                        else { inQuotes = !inQuotes; }
+                    } else if (c === ',' && !inQuotes) {
+                        row.push('');
+                    } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                        if (c === '\r' && next === '\n') { i++; }
+                        lines.push(row);
+                        row = [""];
+                    } else {
+                        row[row.length - 1] += c;
+                    }
+                }
+                if (row.length > 1 || row[0] !== "") lines.push(row);
+
+                // 見出し（1行目）をスキップ
+                let parsed = lines.slice(1);
+                
+                // 「背番号」の再掲データや、空行を綺麗に完全に除外
+                parsed = parsed.filter(p => p[0] && p[1] && p[0].trim() !== '' && p[0] !== '背番号');
+
+                // 🔄 背番号のソート処理を強化（3桁の育成選手や0、00なども若い順に綺麗に並ぶよう調整）
                 parsed.sort((a, b) => {
                     const numA = parseInt(a[0], 10);
                     const numB = parseInt(b[0], 10);
@@ -500,10 +519,9 @@
             modal.innerHTML = generateModalContent(currentViewMode);
             document.body.appendChild(modal);
 
-            // 🛠️ 親要素(modal)でのイベントリスナーを修正
             modal.addEventListener('click', (e) => {
                 if (e.target && e.target.id === 'modal-toggle-btn') {
-                    e.stopPropagation(); // 💥 画面が閉じるバブリングを完全にストップ
+                    e.stopPropagation(); 
                     currentViewMode = currentViewMode === 'pitcher' ? 'batter' : 'pitcher';
                     pObj.currentView = currentViewMode; 
                     modal.innerHTML = generateModalContent(currentViewMode);
