@@ -571,11 +571,15 @@
                 else if (playerName.length === 6) lenClass = 'len-6';
                 else if (playerName.length >= 7) lenClass = 'len-long';
 
-                const pIndices = [2,3,4,5,6,9,20,21];
+                // 試合数(2)を除く投手成績インデックス: 勝利(3), 敗戦(4), ホールド(5), セーブ(6), 奪三振(9), 防御率(20), WHIP(21)
+                const pIndicesExcludingGames = [3,4,5,6,9,20,21];
                 const bIndices = [11,12,14,15,16,19,22,23];
-                const hasPitcher = hasStatsData(p, pIndices);
+                
+                const hasPitcherRealStats = hasStatsData(p, pIndicesExcludingGames);
                 const hasBatter = hasStatsData(p, bIndices);
-                const canSwitch = (hasPitcher && hasBatter);
+                
+                // 切り替え可能な条件：投手成績(試合数以外)に0以外のスタッツがある 且つ 野手成績もある
+                const canSwitch = (hasPitcherRealStats && hasBatter);
 
                 let l1, s1, l2, s2, l3, s3, modeName;
                 if (pObj.currentView === 'pitcher') {
