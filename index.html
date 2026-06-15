@@ -29,16 +29,16 @@
         .sidebar .contact-item { border-top: 1px solid #555; background-color: #333; color: #fff !important; font-weight: bold; }
         .openbtn { font-size: 16px; cursor: pointer; background: #333; color: white; padding: 8px 12px; border: none; position: fixed; top: 10px; left: 10px; z-index: 1000; border-radius: 4px; }
         
-        /* 👑 ヘッダータイトルとお気に入り星ボタン */
+        /* ヘッダータイトルとお気に入り星ボタン */
         .header-container { text-align: center; padding: 45px 0 10px 0; display: flex; justify-content: center; align-items: center; gap: 8px; }
         #team-name-display { font-size: 20px; font-weight: bold; }
         #fav-btn { font-size: 22px; cursor: pointer; background: none; border: none; padding: 0; line-height: 1; -webkit-tap-highlight-color: transparent; outline: none; }
 
-        /* 🔍 検索＆フィルターエリア */
+        /* 検索＆フィルターエリア */
         .filter-area { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 0 auto; width: 95%; max-width: 500px; }
         #player-search { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
         
-        /* 🎛️ フィルターチップ（案B: 横スクロール・1行固定化） */
+        /* フィルターチップ */
         .filter-chips-container { 
             display: flex; 
             flex-wrap: nowrap; 
@@ -48,16 +48,10 @@
             padding: 6px 4px; 
             box-sizing: border-box;
             gap: 6px;
-            -webkit-overflow-scrolling: touch; /* iOSでの慣性スクロール用 */
+            -webkit-overflow-scrolling: touch; 
         }
-        /* スクロールバーをすっきり隠す設定 */
-        .filter-chips-container::-webkit-scrollbar {
-            display: none;
-        }
-        .filter-chips-container {
-            -ms-overflow-style: none;  /* IE/Edge用 */
-            scrollbar-width: none;  /* Firefox用 */
-        }
+        .filter-chips-container::-webkit-scrollbar { display: none; }
+        .filter-chips-container { -ms-overflow-style: none; scrollbar-width: none; }
 
         .filter-chip { 
             background: #e0e0e0; 
@@ -68,7 +62,7 @@
             font-weight: bold; 
             border-radius: 20px; 
             cursor: pointer; 
-            flex-shrink: 0; /* 1行の中でボタンが潰れるのを防ぐ */
+            flex-shrink: 0; 
             transition: all 0.15s ease; 
             -webkit-tap-highlight-color: transparent; 
         }
@@ -77,18 +71,18 @@
 
         .player-container { display: flex; flex-wrap: wrap; gap: 12px; padding: 15px 5px; justify-content: center; }
         
-        /* 📇 カードスタイル */
+        /* カードスタイル */
         .player-card { background: #fff; border: 1px solid #ddd; padding: 28px 5px 12px 5px; width: 160px; min-height: 165px; text-align: center; cursor: pointer; position: relative; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.15s ease; }
         .player-card:active { transform: scale(0.98); }
         
-        /* 🔢 背番号バッジ */
+        /* 背番号バッジ */
         .number-badge { position: absolute; top: 8px; left: 8px; background: var(--team-accent); color: #fff; font-size: 11px; font-weight: bold; min-width: 24px; height: 24px; line-height: 24px; border-radius: 12px; padding: 0 4px; box-sizing: border-box; text-align: center; }
         
-        /* 🔄 個別切り替えボタン */
+        /* 個別切り替えボタン */
         .card-toggle-icon-btn { position: absolute; top: 36px; left: 8px; background: #ffffff; border: 1px solid #ccc; font-size: 12px; width: 24px; height: 24px; line-height: 22px; border-radius: 12px; cursor: pointer; color: #555; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.15s; }
         .card-toggle-icon-btn:hover { background: #f0f0f0; color: #000; }
 
-        /* 🎖️ 所属バッジ */
+        /* 所属バッジ */
         .army-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; line-height: 1.3; }
         .army-1f { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
         .army-2f { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
@@ -106,12 +100,13 @@
         .stats { font-size: 13px; font-weight: bold; color: #111; }
         .mode-indicator { font-size: 8px; color: #aaa; margin-top: 2px; text-align: center; font-weight: normal; }
 
-        /* 📋 モーダルスタイル */
-        .modal-stat-box { background: #f8f8f8; padding: 10px; border-radius: 4px; text-align: center; border: 1px solid #eee; }
-        .modal-stat-label { font-size: 11px; color: #888; margin-bottom: 2px; }
+        /* モーダルスタイル */
+        .modal-stat-box { background: #f9f9f9; padding: 12px 5px; border-radius: 6px; text-align: center; border: 1px solid #f0f0f0; display: flex; flex-direction: column; justify-content: center; min-height: 55px; box-sizing: border-box; }
+        .modal-stat-label { font-size: 11px; color: #888; margin-bottom: 4px; }
         .modal-stat-value { font-size: 18px; font-weight: bold; color: #111; }
+        .modal-stat-value-sub { font-size: 13px; color: #666; font-weight: normal; }
 
-        /* --- ホーム画面のスタイル --- */
+        /* ホーム画面のスタイル */
         #home-screen { display: none; padding: 20px 10px; max-width: 800px; margin: 0 auto; }
         .home-title { text-align: center; font-size: 24px; font-weight: bold; margin: 40px 0 20px 0; }
         .league-title { font-size: 18px; font-weight: bold; margin: 25px 5px 10px 5px; padding-left: 8px; }
@@ -121,14 +116,11 @@
         .mlb-al-title { border-left: 5px solid #ff4500; }
         .mlb-nl-title { border-left: 5px solid #0000ff; }
         
-        /* 1行5チーム用のグリッド（はみ出し自動調整・改行対応） */
         .home-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
         .home-grid-6 { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 25px; }
         
         .home-team-btn { background: #fff; padding: 12px 2px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-bottom: 4px solid #ccc; transition: transform 0.1s; display: flex; align-items: center; justify-content: center; word-break: break-all; line-height: 1.2; box-sizing: border-box; overflow: hidden; }
         .home-team-btn:active { transform: scale(0.95); }
-
-        /* 長い名前のチーム用フォントサイズ自動微調整 */
         .home-team-btn.name-long { font-size: 10px; }
         .home-team-btn.name-medium { font-size: 11px; }
 
@@ -137,7 +129,7 @@
         .home-menu-item:hover { text-decoration: underline; }
         .home-notice-content { max-width: 500px; width: 90%; background: #fff; padding: 15px 20px; font-size: 13px; color: #555; line-height: 1.6; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-top: -5px; box-sizing: border-box; text-align: left; }
 
-        /* 📣 広告エリア */
+        /* 広告エリア */
         .ad-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #fff; border-top: 1px solid #ddd; z-index: 1000; display: flex; justify-content: center; align-items: center; box-shadow: 0 -2px 5px rgba(0,0,0,0.05); }
         .ad-placeholder { font-size: 10px; color: #aaa; text-align: center; }
     </style>
@@ -193,7 +185,7 @@
             <div class="menu-item" style="color: #32cd32;" onclick="toggleDropdown('ce-league')">セ・リーグ ▼</div>
             <div id="ce-league" style="display:none; background:#222;"></div>
             
-            <div style="padding: 15px 25px 0 25px; font-size: 12px; color: #888; font-weight: bold;">メジャーリーグ（ア・リーグ）</div>
+            <div style="padding: 15px 25px 0 25px; font-size: 12px; color: #888; font-weight: bold;">メジャーリーグ（ア）</div>
             <div class="menu-item" style="color: #ff4500; padding-top: 5px;" onclick="toggleDropdown('al-east')">ア・東地区 ▼</div>
             <div id="al-east" style="display:none; background:#222;"></div>
             <div class="menu-item" style="color: #ff4500;" onclick="toggleDropdown('al-central')">ア・中地区 ▼</div>
@@ -201,7 +193,7 @@
             <div class="menu-item" style="color: #ff4500;" onclick="toggleDropdown('al-west')">ア・西地区 ▼</div>
             <div id="al-west" style="display:none; background:#222;"></div>
 
-            <div style="padding: 15px 25px 0 25px; font-size: 12px; color: #888; font-weight: bold;">メジャーリーグ（ナ・リーグ）</div>
+            <div style="padding: 15px 25px 0 25px; font-size: 12px; color: #888; font-weight: bold;">メジャーリーグ（ナ）</div>
             <div class="menu-item" style="color: #0000ff; padding-top: 5px;" onclick="toggleDropdown('nl-east')">ナ・東地区 ▼</div>
             <div id="nl-east" style="display:none; background:#222;"></div>
             <div class="menu-item" style="color: #0000ff;" onclick="toggleDropdown('nl-central')">ナ・中地区 ▼</div>
@@ -240,7 +232,6 @@
     </div>
 
     <script>
-        // ⚾ NPBとMLBのチームデータ定義
         const TEAMS = {
             // --- NPB パ・リーグ ---
             SOFTBANK: { id: '1D55MmUmSxxvDf92UE_N0N3BTSrZOoR5qQxoXm_BL2_E', name: 'ソフトバンク', title: '福岡ソフトバンクホークス', accent: '#ffcc00', league: 'pa', type: 'npb' },
@@ -284,7 +275,7 @@
             BRAVES: { id: '1zGReTokq-s_L2Ecz9QIATuRpQL3uwEBNljCQTwPc98A', name: 'ブレーブス', title: 'アトランタ・ブレーブス', accent: '#ce1141', league: 'nl-east', type: 'mlb' },
             METS: { id: '1p_8etrwNPo_zdcoj38bAog3-Q-k6GAanJfiddemryW0', name: 'メッツ', title: 'ニューヨーク・メッツ', accent: '#ff5910', league: 'nl-east', type: 'mlb' },
             NATIONALS: { id: '1xNm1t2BI3s22p-fIBSz6bVZnlDb0dmpB7jUyJ9BxrH0', name: 'ナショナルズ', title: 'ワシントン・ナショナルズ', accent: '#ab0003', league: 'nl-east', type: 'mlb' },
-            MARLINS: { id: '1pWwPbXLwQY91FSYmLl9Wd4XCDWpZklk--4zvQ0hveIM', name: 'マーリンズ', title: 'マイアミ・マーリンズ', accent: '#00a3e0', league: 'nl-east', type: 'mlb' },
+            MARLINS: { id: '1pWwPbXLwQY91FSYmLl9Wd4XCDWpZkl--4zvQ0hveIM', name: 'マーリンズ', title: 'マイアミ・マーリンズ', accent: '#00a3e0', league: 'nl-east', type: 'mlb' },
             
             // --- MLB ナ・リーグ 中地区 ---
             BREWERS: { id: '16W07i75Ej9wCGoQAMSm_C0TG6yUSQdPL0lJpYJU9Z9M', name: 'ブルワーズ', title: 'ミルウォーキー・ブルワーズ', accent: '#12284c', league: 'nl-central', type: 'mlb' },
@@ -331,56 +322,37 @@
         });
 
         function init() {
-            // サイドバー要素
             const sidebarLeagues = {
-                'pa': document.getElementById('pa-league'),
-                'ce': document.getElementById('ce-league'),
-                'al-east': document.getElementById('al-east'),
-                'al-central': document.getElementById('al-central'),
-                'al-west': document.getElementById('al-west'),
-                'nl-east': document.getElementById('nl-east'),
-                'nl-central': document.getElementById('nl-central'),
-                'nl-west': document.getElementById('nl-west')
+                'pa': document.getElementById('pa-league'), 'ce': document.getElementById('ce-league'),
+                'al-east': document.getElementById('al-east'), 'al-central': document.getElementById('al-central'), 'al-west': document.getElementById('al-west'),
+                'nl-east': document.getElementById('nl-east'), 'nl-central': document.getElementById('nl-central'), 'nl-west': document.getElementById('nl-west')
             };
 
-            // ホーム画面要素
             const homeGrids = {
-                'pa': document.getElementById('home-pa-grid'),
-                'ce': document.getElementById('home-ce-grid'),
-                'al-east': document.getElementById('home-al-east-grid'),
-                'al-central': document.getElementById('home-al-central-grid'),
-                'al-west': document.getElementById('home-al-west-grid'),
-                'nl-east': document.getElementById('home-nl-east-grid'),
-                'nl-central': document.getElementById('home-nl-central-grid'),
-                'nl-west': document.getElementById('home-nl-west-grid')
+                'pa': document.getElementById('home-pa-grid'), 'ce': document.getElementById('home-ce-grid'),
+                'al-east': document.getElementById('home-al-east-grid'), 'al-central': document.getElementById('home-al-central-grid'), 'al-west': document.getElementById('home-al-west-grid'),
+                'nl-east': document.getElementById('home-nl-east-grid'), 'nl-central': document.getElementById('home-nl-central-grid'), 'nl-west': document.getElementById('home-nl-west-grid')
             };
             
-            // 各コンテナの初期化
             Object.values(sidebarLeagues).forEach(el => { if(el) el.innerHTML = ''; });
             Object.values(homeGrids).forEach(el => { if(el) el.innerHTML = ''; });
 
             Object.keys(TEAMS).forEach(k => {
                 const t = TEAMS[k];
                 
-                // サイドバーメニューアイテム
                 const d = document.createElement('div');
                 d.style.padding = '12px 40px'; d.style.color = '#ccc'; d.style.cursor = 'pointer'; d.innerText = t.name;
                 d.onclick = () => switchTeam(k);
                 if (sidebarLeagues[t.league]) sidebarLeagues[t.league].appendChild(d);
                 
-                // ホーム画面ボタン
                 const btn = document.createElement('div');
                 btn.className = 'home-team-btn'; 
                 btn.innerText = t.name; 
                 btn.style.borderBottomColor = t.accent;
                 btn.onclick = () => switchTeam(k);
 
-                // 文字数に応じたサイズ微調整（略称を使わないための対応）
-                if (t.name.length >= 8) {
-                    btn.classList.add('name-long');
-                } else if (t.name.length >= 6) {
-                    btn.classList.add('name-medium');
-                }
+                if (t.name.length >= 8) btn.classList.add('name-long');
+                else if (t.name.length >= 6) btn.classList.add('name-medium');
 
                 if (homeGrids[t.league]) homeGrids[t.league].appendChild(btn);
             });
@@ -400,7 +372,6 @@
             document.getElementById('home-notice-dropdown').style.display = 'none';
         }
 
-        // 🎛️ チーム形態（NPB/MLB）に応じてフィルターチップを動的に生成
         function generateFilterChips(teamType) {
             const container = document.getElementById('dynamic-chips-area');
             container.innerHTML = '';
@@ -409,9 +380,8 @@
             let posConfigs = [];
 
             if (teamType === 'mlb') {
-                // 全登録から「40人枠」へ変更
                 armyConfigs = [
-                    { id: 'all-army', label: '40人枠', value: 'all' },
+                    { id: 'all-army', label: '全登録', value: 'all' },
                     { id: '1f', label: 'メジャー', value: 'メジャー' },
                     { id: '2f', label: 'マイナー', value: 'マイナー' },
                     { id: 'il', label: 'IL入り', value: 'IL' }
@@ -440,7 +410,6 @@
                 ];
             }
 
-            // 所属ステータスチップ作成
             armyConfigs.forEach(c => {
                 const btn = document.createElement('button');
                 btn.id = `chip-${c.id}`;
@@ -450,12 +419,10 @@
                 container.appendChild(btn);
             });
 
-            // ディバイダー
             const divider = document.createElement('div');
             divider.className = 'filter-divider';
             container.appendChild(divider);
 
-            // ポジションチップ作成
             posConfigs.forEach(c => {
                 const btn = document.createElement('button');
                 btn.id = `chip-${c.id}`;
@@ -492,13 +459,10 @@
                 const text = await res.text();
                 
                 let rows = text.split(/\r?\n/).filter(r => r.trim() !== "").slice(1);
-                
                 let parsed = rows.map(r => r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(c => c.replace(/^"|"$/g, '')));
                 
                 parsed = parsed.map(row => {
-                    if (row[0] && row[0].includes('/') && row[0].includes(':')) {
-                        return row.slice(1);
-                    }
+                    if (row[0] && row[0].includes('/') && row[0].includes(':')) return row.slice(1);
                     return row;
                 });
 
@@ -532,11 +496,8 @@
 
         function toggleFavoriteTeam() {
             const currentFav = localStorage.getItem('fav_team_key');
-            if (currentFav === currentTeamKey) {
-                localStorage.removeItem('fav_team_key'); 
-            } else {
-                localStorage.setItem('fav_team_key', currentTeamKey); 
-            }
+            if (currentFav === currentTeamKey) localStorage.removeItem('fav_team_key'); 
+            else localStorage.setItem('fav_team_key', currentTeamKey); 
             updateFavBtnUI();
         }
 
@@ -576,10 +537,7 @@
                 const army = p[25] || '';
 
                 if (searchVal && !name.includes(searchVal)) return false;
-
-                if (activeArmyFilter !== 'all') {
-                    if (!army.includes(activeArmyFilter)) return false;
-                }
+                if (activeArmyFilter !== 'all' && !army.includes(activeArmyFilter)) return false;
 
                 if (activePosFilter !== 'all') {
                     if (activePosFilter === '指名打者' && !(pos.includes('指名打者') || pos.includes('DH'))) return false;
@@ -589,10 +547,8 @@
                     if (activePosFilter === '内野' && !pos.includes('内野')) return false;
                     if (activePosFilter === '外野' && !pos.includes('外野')) return false;
                 }
-
                 return true;
             });
-
             render(filtered);
         }
 
@@ -615,8 +571,8 @@
                 else if (playerName.length === 6) lenClass = 'len-6';
                 else if (playerName.length >= 7) lenClass = 'len-long';
 
-                const pIndices = [3,4,5,6,7,8,9,10,11,20,21];
-                const bIndices = [12,13,14,15,16,17,18,19,22,23];
+                const pIndices = [2,3,4,5,6,9,20,21];
+                const bIndices = [11,12,14,15,16,19,22,23];
                 const hasPitcher = hasStatsData(p, pIndices);
                 const hasBatter = hasStatsData(p, bIndices);
                 const canSwitch = (hasPitcher && hasBatter);
@@ -668,7 +624,6 @@
                         applyFilters(); 
                     };
                 }
-
                 c.appendChild(card);
             });
         }
@@ -684,72 +639,112 @@
             const ageStr = calculateAge(d[26]);
 
             const modal = document.createElement('div');
-            modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:2000;";
+            modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:2000;padding:10px;box-sizing:border-box;";
             modal.onclick = () => modal.remove();
             
             function generateModalContent(targetMode) {
                 let statsHTML = '';
                 
                 if (targetMode === 'pitcher') {
-                    // 「登板」から「試合数」に表記統一
                     const items = [
-                        {l:'防御率', v:d[20] || '0.00'}, {l:'試合数', v:d[2] || '0'}, 
-                        {l:'勝利', v:d[3] || '0'},   {l:'敗戦', v:d[4] || '0'}, 
-                        {l:'ホールド', v:d[5] || '0'}, {l:'セーブ', v:d[6] || '0'}, 
-                        {l:'奪三振', v:d[9] || '0'}
+                        {l:'防御率', v:d[20] || '0.00', type:'normal'}, 
+                        {l:'登板', v:d[2] || '0', type:'normal'}, 
+                        {l:'勝利', v:d[3] || '0', type:'normal'}, 
+                        {l:'敗戦', v:d[4] || '0', type:'normal'}, 
+                        {l:'ホールド', v:d[5] || '0', type:'normal'}, 
+                        {l:'セーブ', v:d[6] || '0', type:'normal'}, 
+                        {l:'奪三振', v:d[9] || '0', type:'normal'}, 
+                        {l:'WHIP', v:d[21] || '0.00', type:'normal'}
                     ];
-                    statsHTML = items.map(i => `<div class="modal-stat-box"><div class="modal-stat-label">${i.l}</div><div class="modal-stat-value">${i.v}</div></div>`).join('');
+                    statsHTML = items.map(i => `
+                        <div class="modal-stat-box">
+                            <div class="modal-stat-label">${i.l}</div>
+                            <div class="modal-stat-value">${i.v}</div>
+                        </div>
+                    `).join('');
                 } else {
+                    // C列(index 2)=試合数, M列(index 12)=打数, 安打(index 13)
+                    const hitsText = (d[12] && d[13]) ? `(${d[12]}-${d[13]})` : ''; 
                     const items = [
-                        {l:'打率', v:d[22] || '.000'}, {l:'試合数', v:d[12] || '0'}, 
-                        {l:'本塁打', v:d[14] || '0'}, {l:'打点', v:d[15] || '0'}, 
-                        {l:'安打', v:d[13] || '0'},   {l:'盗塁', v:d[19] || '0'}
+                        {l:'打率 (打数-安打)', v:d[22] || '.000', sub:hitsText, type:'avg'}, 
+                        {l:'試合数', v:d[2] || '0', type:'normal'}, 
+                        {l:'本塁打', v:d[14] || '0', type:'normal'}, 
+                        {l:'打点', v:d[15] || '0', type:'normal'}, 
+                        {l:'四死球', v:d[17] || '0', type:'normal'}, 
+                        {l:'盗塁', v:d[19] || '0', type:'normal'}, 
+                        {l:'OPS', v:d[23] || '.000', type:'normal'}
                     ];
-                    statsHTML = items.map(i => `<div class="modal-stat-box"><div class="modal-stat-label">${i.l}</div><div class="modal-stat-value">${i.v}</div></div>`).join('');
+                    
+                    statsHTML = items.map(i => {
+                        if (i.type === 'avg') {
+                            return `
+                                <div class="modal-stat-box" style="grid-column: span 2; min-height:60px;">
+                                    <div class="modal-stat-label">${i.l}</div>
+                                    <div class="modal-stat-value">${i.v} <span class="modal-stat-value-sub">${i.sub}</span></div>
+                                </div>
+                            `;
+                        } else {
+                            return `
+                                <div class="modal-stat-box">
+                                    <div class="modal-stat-label">${i.l}</div>
+                                    <div class="modal-stat-value">${i.v}</div>
+                                </div>
+                            `;
+                        }
+                    }).join('');
                 }
 
-                let switchBtnHTML = '';
+                let headerToggleIconHTML = '';
                 if (canSwitch) {
-                    switchBtnHTML = `<button id="modal-toggle-btn" style="margin-top:15px; width:100%; padding:10px; background:var(--team-accent); color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">${targetMode === 'pitcher' ? '野手成績を表示' : '投手成績を表示'}</button>`;
+                    headerToggleIconHTML = `
+                        <button id="modal-header-toggle-btn" style="position:absolute; top:20px; right:20px; background:#fff; border:1px solid #ddd; width:32px; height:32px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                            🔄
+                        </button>
+                    `;
                 }
 
                 return `
-                    <div style="background:#fff; width:90%; max-width:400px; padding:20px; border-radius:8px; box-sizing:border-box; position:relative;" onclick="event.stopPropagation()">
-                        <div style="font-size:13px; color:#888; margin-bottom:4px;">背番号 ${playerNo} / ${army}</div>
-                        <div style="font-size:22px; font-weight:bold; color:#000; margin-bottom:12px;">${playerName}</div>
-                        <div style="font-size:13px; color:#444; margin-bottom:4px;">位置: ${pos}</div>
-                        <div style="font-size:13px; color:#444; margin-bottom:4px;">生年月日: ${birth}${ageStr}</div>
-                        <div style="font-size:13px; color:#444; margin-bottom:20px;">出身地: ${hometown}</div>
+                    <div style="background:#fff; width:100%; max-width:420px; padding:25px 20px 20px 20px; border-radius:12px; box-sizing:border-box; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.15);" onclick="event.stopPropagation()">
+                        ${headerToggleIconHTML}
+                        <div style="font-size:13px; color:#888; margin-bottom:4px; font-weight:bold;">#${playerNo} | ${pos} [${army}]</div>
+                        <div style="font-size:26px; font-weight:bold; color:#000; margin-bottom:12px; border-bottom: 2px solid var(--team-accent); padding-bottom:8px;">${playerName}</div>
+                        <div style="font-size:13px; color:#555; margin-bottom:4px;">生年月日: ${birth}${ageStr}</div>
+                        <div style="font-size:13px; color:#555; margin-bottom:20px;">出身地: ${hometown}</div>
                         
-                        <div style="border-top:1px dashed #ccc; padding-top:15px;">
-                            <div style="font-size:12px; font-weight:bold; color:#555; margin-bottom:10px; text-align:center;">【 ${targetMode === 'pitcher' ? '投手成績' : '野手成績'} 】</div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div style="margin-bottom:20px;">
+                            <div style="font-size:12px; font-weight:bold; color:#666; margin-bottom:12px; text-align:center; background:#f5f5f5; padding:4px; border-radius:4px;">【 ${targetMode === 'pitcher' ? '投手成績' : '野手成績'} 】</div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                                 ${statsHTML}
                             </div>
                         </div>
-                        ${switchBtnHTML}
-                        <button style="margin-top:10px; width:100%; padding:10px; background:#eee; color:#333; border:none; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="document.querySelector('div[style*=\'position:fixed\']').remove()">閉じる</button>
+                        <button id="modal-close-btn" style="width:100%; padding:14px; background:#333; color:#fff; border:none; border-radius:6px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.1); -webkit-tap-highlight-color:transparent;">閉じる</button>
                     </div>
                 `;
             }
 
             let currentModalMode = pObj.currentView;
-            modal.innerHTML = generateModalContent(currentModalMode);
+            
+            function updateModalDOM(targetMode) {
+                modal.innerHTML = generateModalContent(targetMode);
+                
+                const closeBtn = modal.querySelector('#modal-close-btn');
+                if (closeBtn) {
+                    closeBtn.onclick = () => modal.remove();
+                }
 
-            function bindModalToggle() {
-                if (!canSwitch) return;
-                const btn = modal.querySelector('#modal-toggle-btn');
-                if (btn) {
-                    btn.onclick = () => {
-                        currentModalMode = currentModalMode === 'pitcher' ? 'batter' : 'pitcher';
-                        modal.innerHTML = generateModalContent(currentModalMode);
-                        bindModalToggle(); 
-                    };
+                if (canSwitch) {
+                    const toggleBtn = modal.querySelector('#modal-header-toggle-btn');
+                    if (toggleBtn) {
+                        toggleBtn.onclick = () => {
+                            currentModalMode = currentModalMode === 'pitcher' ? 'batter' : 'pitcher';
+                            updateModalDOM(currentModalMode);
+                        };
+                    }
                 }
             }
 
+            updateModalDOM(currentModalMode);
             document.body.appendChild(modal);
-            bindModalToggle();
         }
 
         function openNav() { document.getElementById("mySidebar").style.width = "var(--sidebar-width)"; }
