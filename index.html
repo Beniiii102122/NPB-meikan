@@ -648,7 +648,7 @@
                 if (targetMode === 'pitcher') {
                     const items = [
                         {l:'防御率', v:d[20] || '0.00', type:'normal'}, 
-                        {l:'登板', v:d[2] || '0', type:'normal'}, 
+                        {l:'試合数', v:d[2] || '0', type:'normal'}, 
                         {l:'勝利', v:d[3] || '0', type:'normal'}, 
                         {l:'敗戦', v:d[4] || '0', type:'normal'}, 
                         {l:'ホールド', v:d[5] || '0', type:'normal'}, 
@@ -663,7 +663,6 @@
                         </div>
                     `).join('');
                 } else {
-                    // C列(index 2)=試合数, M列(index 12)=打数, 安打(index 13)
                     const hitsText = (d[12] && d[13]) ? `(${d[12]}-${d[13]})` : ''; 
                     const items = [
                         {l:'打率 (打数-安打)', v:d[22] || '.000', sub:hitsText, type:'avg'}, 
