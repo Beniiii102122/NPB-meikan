@@ -16,7 +16,7 @@
             font-family: sans-serif;
             color: #333; 
             margin: 0; 
-            padding-bottom: 110px; 
+            padding-bottom: 20px; /* 広告削除に伴い下部の余白をスッキリ調整 */
         }
 
         /* --- メインコンテンツ --- */
@@ -131,10 +131,6 @@
         .home-menu-item { font-size: 16px; color: #333; text-decoration: none; cursor: pointer; font-weight: bold; }
         .home-menu-item:hover { text-decoration: underline; }
         .home-notice-content { max-width: 500px; width: 90%; background: #fff; padding: 15px 20px; font-size: 13px; color: #555; line-height: 1.6; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-top: -5px; box-sizing: border-box; text-align: left; }
-
-        /* 広告エリア */
-        .ad-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #fff; border-top: 1px solid #ddd; z-index: 1000; display: flex; justify-content: center; align-items: center; box-shadow: 0 -2px 5px rgba(0,0,0,0.05); }
-        .ad-placeholder { font-size: 10px; color: #aaa; text-align: center; }
     </style>
 </head>
 <body>
@@ -225,12 +221,6 @@
                 </div>
             </div>
             <div id="container" class="player-container"></div>
-        </div>
-    </div>
-
-    <div class="ad-container">
-        <div class="ad-placeholder">
-            スポンサーリンク<br>
         </div>
     </div>
 
