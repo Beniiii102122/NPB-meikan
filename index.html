@@ -23,10 +23,13 @@
         #main-content { display: none; }
 
         .sticky-header { position: sticky; top: 0; z-index: 900; background: #fff; padding-bottom: 12px; border-bottom: 2px solid var(--team-accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .sidebar { height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0; background-color: #333; overflow-x: hidden; transition: 0.3s; padding-top: 60px; }
+        
+        /* サイドバー */
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0; background-color: #333; overflow-x: hidden; overflow-y: auto; transition: 0.3s; padding-top: 60px; box-sizing: border-box; }
         .sidebar a, .sidebar .menu-item { padding: 15px 25px; text-decoration: none; font-size: 16px; color: #fff; display: block; border-bottom: 1px solid #444; cursor: pointer; }
         .notice-content { padding: 15px 25px; font-size: 12px; color: #ccc; line-height: 1.6; background: #2a2a2a; border-bottom: 1px solid #444; }
-        .sidebar .contact-item { border-top: 1px solid #555; background-color: #333; color: #fff !important; font-weight: bold; }
+        .sidebar .contact-item { background-color: #444; color: #fff !important; font-weight: bold; border-top: 1px solid #555; }
+        .closebtn { position: absolute; top: 10px; right: 20px; font-size: 36px; color: #fff; text-decoration: none; cursor: pointer; }
         .openbtn { font-size: 16px; cursor: pointer; background: #333; color: white; padding: 8px 12px; border: none; position: fixed; top: 10px; left: 10px; z-index: 1000; border-radius: 4px; }
         
         /* ヘッダータイトルとお気に入り星ボタン */
@@ -176,7 +179,7 @@
         <button class="openbtn" onclick="openNav()">☰ メニュー</button>
 
         <div id="mySidebar" class="sidebar">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <span class="closebtn" onclick="closeNav()">×</span>
             <div class="menu-item" style="color: #fff; background: #555; font-weight: bold;" onclick="showHome()">ホーム画面に戻る</div>
             
             <div style="padding: 10px 25px 0 25px; font-size: 12px; color: #888; font-weight: bold;">日本プロ野球</div>
@@ -468,14 +471,26 @@
 
                 parsed = parsed.filter(p => p[0] && p[1] && p[0] !== '背番号');
 
+                // 背番号順のソート処理（「00」→「0」→「その他数字」の並び順に対応）
                 parsed.sort((a, b) => {
-                    const numA = parseInt(a[0], 10);
-                    const numB = parseInt(b[0], 10);
-                    if (isNaN(numA) && isNaN(numB)) return String(a[0]).localeCompare(String(b[0]));
+                    const rawA = String(a[0]).trim();
+                    const rawB = String(b[0]).trim();
+
+                    // 1. 「00」と「0」の特殊ハンドリング
+                    if (rawA === '00' && rawB !== '00') return -1;
+                    if (rawB === '00' && rawA !== '00') return 1;
+                    if (rawA === '0' && rawB !== '0' && rawB !== '00') return -1;
+                    if (rawB === '0' && rawA !== '0' && rawA !== '00') return 1;
+
+                    // 2. 通常の数値変換と比較
+                    const numA = parseInt(rawA, 10);
+                    const numB = parseInt(rawB, 10);
+
+                    if (isNaN(numA) && isNaN(numB)) return rawA.localeCompare(rawB);
                     if (isNaN(numA)) return 1; 
                     if (isNaN(numB)) return -1;
                     if (numA !== numB) return numA - numB;
-                    return String(a[0]).localeCompare(String(b[0]));
+                    return rawA.localeCompare(rawB);
                 });
 
                 allPlayers = parsed.map(p => {
@@ -573,13 +588,14 @@
 
                 // 試合数(2)を除く投手成績インデックス: 勝利(3), 敗戦(4), ホールド(5), セーブ(6), 奪三振(9), 防御率(20), WHIP(21)
                 const pIndicesExcludingGames = [3,4,5,6,9,20,21];
-                const bIndices = [11,12,14,15,16,19,22,23];
+                // 試合数(2)を除く野手成績インデックス: 打数(12), 安打(13), 本塁打(14), 打点(15), 四死球(17), 盗塁(19), 打率(22), OPS(23)
+                const bIndicesExcludingGames = [12,13,14,15,17,19,22,23];
                 
                 const hasPitcherRealStats = hasStatsData(p, pIndicesExcludingGames);
-                const hasBatter = hasStatsData(p, bIndices);
+                const hasBatterRealStats = hasStatsData(p, bIndicesExcludingGames);
                 
-                // 切り替え可能な条件：投手成績(試合数以外)に0以外のスタッツがある 且つ 野手成績もある
-                const canSwitch = (hasPitcherRealStats && hasBatter);
+                // 切り替え可能条件：投手成績・野手成績の双方に試合数以外の実績(0以外)が存在すること
+                const canSwitch = (hasPitcherRealStats && hasBatterRealStats);
 
                 let l1, s1, l2, s2, l3, s3, modeName;
                 if (pObj.currentView === 'pitcher') {
