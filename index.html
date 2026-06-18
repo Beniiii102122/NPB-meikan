@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NPB / MLB 選手名鑑</title>
+    <title>NPB 選手名鑑</title>
     <style>
         :root {
             --team-bg: #f4f4f4;
@@ -16,7 +16,7 @@
             font-family: sans-serif;
             color: #333; 
             margin: 0; 
-            padding-bottom: 20px; /* 広告削除に伴い下部の余白をスッキリ調整 */
+            padding-bottom: 20px;
         }
 
         /* --- メインコンテンツ --- */
@@ -89,7 +89,6 @@
         .army-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; line-height: 1.3; }
         .army-1f { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
         .army-2f { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
-        .army-il { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
 
         .name-wrapper { margin: 25px 0 10px 0; padding: 0 4px; display: flex; justify-content: center; align-items: center; min-height: 22px; }
         .name { font-size: 18px; font-weight: bold; color: #000; line-height: 1.2; white-space: nowrap; }
@@ -113,13 +112,9 @@
         #home-screen { display: none; padding: 20px 10px; max-width: 800px; margin: 0 auto; }
         .home-title { text-align: center; font-size: 24px; font-weight: bold; margin: 40px 0 20px 0; }
         .league-title { font-size: 18px; font-weight: bold; margin: 25px 5px 10px 5px; padding-left: 8px; }
-        .zone-title { font-size: 13px; font-weight: bold; margin: 15px 5px 5px 5px; color: #555; }
         .pa-title { border-left: 5px solid #00bfff; }
         .ce-title { border-left: 5px solid #32cd32; }
-        .mlb-al-title { border-left: 5px solid #ff4500; }
-        .mlb-nl-title { border-left: 5px solid #0000ff; }
         
-        .home-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
         .home-grid-6 { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 25px; }
         
         .home-team-btn { background: #fff; padding: 12px 2px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-bottom: 4px solid #ccc; transition: transform 0.1s; display: flex; align-items: center; justify-content: center; word-break: break-all; line-height: 1.2; box-sizing: border-box; overflow: hidden; }
@@ -136,30 +131,12 @@
 <body>
 
     <div id="home-screen">
-        <div class="home-title">NPB / MLB 選手名鑑</div>
+        <div class="home-title">NPB 選手名鑑</div>
         
-        <h2 style="text-align: center; margin-top: 30px; background: #eee; padding: 5px; font-size: 20px;">プロ野球 (NPB)</h2>
         <div class="league-title pa-title">パシフィック・リーグ</div>
         <div id="home-pa-grid" class="home-grid-6"></div>
         <div class="league-title ce-title">セントラル・リーグ</div>
         <div id="home-ce-grid" class="home-grid-6"></div>
-
-        <h2 style="text-align: center; margin-top: 40px; background: #eee; padding: 5px; font-size: 20px;">メジャーリーグ (MLB)</h2>
-        <div class="league-title mlb-al-title">アメリカン・リーグ</div>
-        <div class="zone-title">▶ 東地区</div>
-        <div id="home-al-east-grid" class="home-grid-5"></div>
-        <div class="zone-title">▶ 中地区</div>
-        <div id="home-al-central-grid" class="home-grid-5"></div>
-        <div class="zone-title">▶ 西地区</div>
-        <div id="home-al-west-grid" class="home-grid-5"></div>
-
-        <div class="league-title mlb-nl-title">ナショナル・リーグ</div>
-        <div class="zone-title">▶ 東地区</div>
-        <div id="home-nl-east-grid" class="home-grid-5"></div>
-        <div class="zone-title">▶ 中地区</div>
-        <div id="home-nl-central-grid" class="home-grid-5"></div>
-        <div class="zone-title">▶ 西地区</div>
-        <div id="home-nl-west-grid" class="home-grid-5"></div>
 
         <div class="home-footer-menu">
             <div class="home-menu-item" onclick="toggleDropdown('home-notice-dropdown')">注意事項 ▼</div>
@@ -183,22 +160,6 @@
             <div id="pa-league" style="display:none; background:#222;"></div>
             <div class="menu-item" style="color: #32cd32;" onclick="toggleDropdown('ce-league')">セ・リーグ ▼</div>
             <div id="ce-league" style="display:none; background:#222;"></div>
-            
-            <div style="padding: 15px 25px 0 25px; font-size: 12px; color: #888; font-weight: bold;">メジャーリーグ（ア）</div>
-            <div class="menu-item" style="color: #ff4500; padding-top: 5px;" onclick="toggleDropdown('al-east')">ア・東地区 ▼</div>
-            <div id="al-east" style="display:none; background:#222;"></div>
-            <div class="menu-item" style="color: #ff4500;" onclick="toggleDropdown('al-central')">ア・中地区 ▼</div>
-            <div id="al-central" style="display:none; background:#222;"></div>
-            <div class="menu-item" style="color: #ff4500;" onclick="toggleDropdown('al-west')">ア・西地区 ▼</div>
-            <div id="al-west" style="display:none; background:#222;"></div>
-
-            <div style="padding: 15px 25px 0 25px; font-size: 12px; color: #888; font-weight: bold;">メジャーリーグ（ナ）</div>
-            <div class="menu-item" style="color: #0000ff; padding-top: 5px;" onclick="toggleDropdown('nl-east')">ナ・東地区 ▼</div>
-            <div id="nl-east" style="display:none; background:#222;"></div>
-            <div class="menu-item" style="color: #0000ff;" onclick="toggleDropdown('nl-central')">ナ・中地区 ▼</div>
-            <div id="nl-central" style="display:none; background:#222;"></div>
-            <div class="menu-item" style="color: #0000ff;" onclick="toggleDropdown('nl-west')">ナ・西地区 ▼</div>
-            <div id="nl-west" style="display:none; background:#222;"></div>
             
             <div class="menu-item" style="color: #fff; margin-top: 15px;" onclick="toggleDropdown('notice-dropdown')">注意事項 ▼</div>
             <div id="notice-dropdown" class="notice-content" style="display:none;">
@@ -227,62 +188,20 @@
     <script>
         const TEAMS = {
             // --- NPB パ・リーグ ---
-            SOFTBANK: { id: '1D55MmUmSxxvDf92UE_N0N3BTSrZOoR5qQxoXm_BL2_E', name: 'ソフトバンク', title: '福岡ソフトバンクホークス', accent: '#ffcc00', league: 'pa', type: 'npb' },
-            FIGHTERS: { id: '14Nd-iWKpiJg7M0Ou2NG0bgARZHJY-JIdARiWCwVTmjM', name: '日本ハム', title: '北海道日本ハムファイターズ', accent: '#005491', league: 'pa', type: 'npb' },
-            ORIX: { id: '1dAaf-rsBz87908KYebqehlK4yG2lUrvCEZWDWVAnXUw', name: 'オリックス', title: 'オリックス・バファローズ', accent: '#b6a269', league: 'pa', type: 'npb' },
-            EAGLES: { id: '1o5tO7aFL2tA_eWfQCPuhyatXC4oqQUOYc1C49DuQ_sU', name: '楽天', title: '東北楽天ゴールデンイーグルス', accent: '#870011', league: 'pa', type: 'npb' },
-            LIONS: { id: '1rU0KqHiGXvS3hAMp0snqepykftW4gnoEcqNAFcK9ZJw', name: '西武', title: '埼玉西武ライオンズ', accent: '#03192e', league: 'pa', type: 'npb' },
-            MARINES: { id: '1knxzRo7DNJO2FMXH09rhif4Shb06wEj80FF0whPoAuc', name: 'ロッテ', title: '千葉ロッテマリーンズ', accent: '#333333', league: 'pa', type: 'npb' },
+            SOFTBANK: { id: '1D55MmUmSxxvDf92UE_N0N3BTSrZOoR5qQxoXm_BL2_E', name: 'ソフトバンク', title: '福岡ソフトバンクホークス', accent: '#ffcc00', league: 'pa' },
+            FIGHTERS: { id: '14Nd-iWKpiJg7M0Ou2NG0bgARZHJY-JIdARiWCwVTmjM', name: '日本ハム', title: '北海道日本ハムファイターズ', accent: '#005491', league: 'pa' },
+            ORIX: { id: '1dAaf-rsBz87908KYebqehlK4yG2lUrvCEZWDWVAnXUw', name: 'オリックス', title: 'オリックス・バファローズ', accent: '#b6a269', league: 'pa' },
+            EAGLES: { id: '1o5tO7aFL2tA_eWfQCPuhyatXC4oqQUOYc1C49DuQ_sU', name: '楽天', title: '東北楽天ゴールデンイーグルス', accent: '#870011', league: 'pa' },
+            LIONS: { id: '1rU0KqHiGXvS3hAMp0snqepykftW4gnoEcqNAFcK9ZJw', name: '西武', title: '埼玉西武ライオンズ', accent: '#03192e', league: 'pa' },
+            MARINES: { id: '1knxzRo7DNJO2FMXH09rhif4Shb06wEj80FF0whPoAuc', name: 'ロッテ', title: '千葉ロッテマリーンズ', accent: '#333333', league: 'pa' },
             
             // --- NPB セ・リーグ ---
-            HANSHIN: { id: '1hZwkTDSa4AOUSlvFvgYB74hU78Uk6Tb3Wxdr6wKuPhs', name: '阪神', title: '阪神タイガース', accent: '#ffcc00', league: 'ce', type: 'npb' },
-            BAYSTARS: { id: '1EGfKQS7CPBxnqk7MN6MVoFc1naTvplPwMMlvO6ucXrs', name: 'DeNA', title: '横浜DeNAベイスターズ', accent: '#005596', league: 'ce', type: 'npb' },
-            GIANTS: { id: '11fiRAjQKNG2widh8Hs9X5izk76CsBhkxC5GucEu3Gio', name: '巨人', title: '読売ジャイアンツ', accent: '#ff6600', league: 'ce', type: 'npb' },
-            DRAGONS: { id: '1jgeiLHIvsXpg-Lb-NS9EwQtsciqqusxMYqUZNDVt5MA', name: '中日', title: '中日ドラゴンズ', accent: '#004a9e', league: 'ce', type: 'npb' },
-            CARP: { id: '1xp_n78P5IMw63fD9dtDF9tQhK9zgF5otK9fwLNPOW2s', name: '広島', title: '広島東洋カープ', accent: '#ff0000', league: 'ce', type: 'npb' },
-            SWALLOWS: { id: '1BYL-hAJNaSshpWfDYnYsk9GdUIT9nEEIGejLuFV4BxY', name: 'ヤクルト', title: '東京ヤクルトスワローズ', accent: '#97c24a', league: 'ce', type: 'npb' },
-
-            // --- MLB ア・リーグ 東地区 ---
-            YANKEES: { id: '11sD2WMnc7nonHc_0JJtJ6bIjM5CFwoXovMVyKyjeV8I', name: 'ヤンキース', title: 'ニューヨーク・ヤンキース', accent: '#132448', league: 'al-east', type: 'mlb' },
-            ORIOLES: { id: '15Ht7e63QwlCAd93RN3cg_4x3QRRzMugXhLQmMbJUwS0', name: 'オリオールズ', title: 'ボルティモア・オリオールズ', accent: '#df4601', league: 'al-east', type: 'mlb' },
-            REDSOX: { id: '18p4RgI-EXkYh7rSGBV9xOyQ_VeynmNBHrCz1SFgkvnc', name: 'レッドソックス', title: 'ボストン・レッドソックス', accent: '#bd3039', league: 'al-east', type: 'mlb' },
-            RAYS: { id: '1ZpOUX5aRHf96tJBKiLa7PN68aXO1UmqDjcymUhIBzEI', name: 'レイズ', title: 'タンパベイ・レイズ', accent: '#092c5c', league: 'al-east', type: 'mlb' },
-            BLUEJAYS: { id: '1e5qTNl6-xHa2fbm7eh2AK258OQAk91gZ1-nmdusiEnw', name: 'ブルージェイズ', title: 'トロント・ブルージェイズ', accent: '#134a8e', league: 'al-east', type: 'mlb' },
-            
-            // --- MLB ア・リーグ 中地区 ---
-            GUARDIANS: { id: '12COcpTatcirUN-JGWzA9r71Pzu118DWMWbHq0zvsQ4Q', name: 'ガーディアンズ', title: 'クリーブランド・ガーディアンズ', accent: '#e31937', league: 'al-central', type: 'mlb' },
-            ROYALS: { id: '1aq59ZN_103mj3DLnzhU9NM5yTHdpHYDwSrVFNPRf-yY', name: 'ロイヤルズ', title: 'カンザスシティ・ロイヤルズ', accent: '#004687', league: 'al-central', type: 'mlb' },
-            TIGERS: { id: '1lmyR-sYAz_XoZmBzeTSwSkKQMZ0ihT5eDKUdnE4uk1M', name: 'タイガース', title: 'デトロイト・タイガース', accent: '#0c2340', league: 'al-central', type: 'mlb' },
-            TWINS: { id: '1WHyVfR7r-AVh8ul959jiCfUZCHm1JhY0w4TfL94U63U', name: 'ツインズ', title: 'ミネソタ・ツインズ', accent: '#002b5c', league: 'al-central', type: 'mlb' },
-            WHITESOX: { id: '18er1txMD90_RPfDkGc7POtvxeeu292H2h_RvXyekq4o', name: 'ホワイトソックス', title: 'シカゴ・ホワイトソックス', accent: '#27251f', league: 'al-central', type: 'mlb' },
-            
-            // --- MLB ア・リーグ 西地区 ---
-            ASTROS: { id: '1qAhIJd5w2CwpoFoWVfysKgCctQukyWK87MlfTXNUh0U', name: 'アストロズ', title: 'ヒューストン・アストロズ', accent: '#eb6e1f', league: 'al-west', type: 'mlb' },
-            MARINERS: { id: '17wBDba8ZmXEroIMhcY3EcSV_2-IzrGJfVHA8g4zd7oo', name: 'マリナーズ', title: 'シアトル・マリナーズ', accent: '#0c2c56', league: 'al-west', type: 'mlb' },
-            RANGERS: { id: '1HDEiDKumAARdT0pCYueg-FQMEXSDDGgekA1eOhq9NLE', name: 'レンジャーズ', title: 'テキサス・レンジャーズ', accent: '#003274', league: 'al-west', type: 'mlb' },
-            ATHLETICS: { id: '12-pyRcgqAjFrDBsy7g5-NYRDYbhhVadaYEaBOd2JJlQ', name: 'アスレチックス', title: 'アスレチックス', accent: '#003831', league: 'al-west', type: 'mlb' },
-            ANGELS: { id: '13wxo4qZYAoNC1FG5lXIh3z28dWNB5ER4J5tqHuJpCb4', name: 'エンゼルス', title: 'ロサンゼルス・エンゼルス', accent: '#ba0021', league: 'al-west', type: 'mlb' },
-
-            // --- MLB ナ・リーグ 東地区 ---
-            PHILLIES: { id: '1AiuYEnAN6kajyDeN498QGUC1H9g4rjYwK1zdeO4GN7E', name: 'フィリーズ', title: 'フィラデルフィア・フィリーズ', accent: '#e81828', league: 'nl-east', type: 'mlb' },
-            BRAVES: { id: '1zGReTokq-s_L2Ecz9QIATuRpQL3uwEBNljCQTwPc98A', name: 'ブレーブス', title: 'アトランタ・ブレーブス', accent: '#ce1141', league: 'nl-east', type: 'mlb' },
-            METS: { id: '1p_8etrwNPo_zdcoj38bAog3-Q-k6GAanJfiddemryW0', name: 'メッツ', title: 'ニューヨーク・メッツ', accent: '#ff5910', league: 'nl-east', type: 'mlb' },
-            NATIONALS: { id: '1xNm1t2BI3s22p-fIBSz6bVZnlDb0dmpB7jUyJ9BxrH0', name: 'ナショナルズ', title: 'ワシントン・ナショナルズ', accent: '#ab0003', league: 'nl-east', type: 'mlb' },
-            MARLINS: { id: '1pWwPbXLwQY91FSYmLl9Wd4XCDWpZkl--4zvQ0hveIM', name: 'マーリンズ', title: 'マイアミ・マーリンズ', accent: '#00a3e0', league: 'nl-east', type: 'mlb' },
-            
-            // --- MLB ナ・リーグ 中地区 ---
-            BREWERS: { id: '16W07i75Ej9wCGoQAMSm_C0TG6yUSQdPL0lJpYJU9Z9M', name: 'ブルワーズ', title: 'ミルウォーキー・ブルワーズ', accent: '#12284c', league: 'nl-central', type: 'mlb' },
-            CARDINALS: { id: '1tC3H86k3EBFEgIQ9agw3Po37N067n29_h6YyaposeSI', name: 'カージナルス', title: 'セントルイス・カージナルス', accent: '#c41d4a', league: 'nl-central', type: 'mlb' },
-            CUBS: { id: '1d3joFaj1ZUPfYwiodPF8-enM8EyXFtYEXNoqnbLgKBk', name: 'カブス', title: 'シカゴ・カブス', accent: '#0e3386', league: 'nl-central', type: 'mlb' },
-            REDS: { id: '1WFHpLPcpl9Mmf5-F40kJEWbg3aCQ5zYhPlXDt1DWKoM', name: 'レッズ', title: 'シンシナティ・レッズ', accent: '#c6011f', league: 'nl-central', type: 'mlb' },
-            PIRATES: { id: '1XT3-SeBGhUzuu-ZPIrEuBdH0ZSIQGFsbcv_M_UFFFT8', name: 'パイレーツ', title: 'ピッツバーグ・パイレーツ', accent: '#fdb827', league: 'nl-central', type: 'mlb' },
-            
-            // --- MLB ナ・リーグ 西地区 ---
-            DODGERS: { id: '1n_dfJHWRp4Xy4knC6w41e-VXKnHa83FgjQ4KhjFZybA', name: 'ドジャース', title: 'ロサンゼルス・ドジャース', accent: '#005a9c', league: 'nl-west', type: 'mlb' },
-            PADRES: { id: '1MbsuE0zYeORpftpX9kknJGOL6Lvjm2xCCCE_rDwh170', name: 'パドレス', title: 'サンディエゴ・パドレス', accent: '#2f241d', league: 'nl-west', type: 'mlb' },
-            GIANTS_MLB: { id: '1cplki47i0hS0rdx8AAOPzK3wdu6k2lXAnJvwZek-Uf8', name: 'ジャイアンツ', title: 'サンフランシスコ・ジャイアンツ', accent: '#fd5a1e', league: 'nl-west', type: 'mlb' },
-            DIAMONDBACKS: { id: '1xqqJN3HVRwboop-BpkQ4oWJxvgv55XxZGPpMbTFy22M', name: 'ダイヤモンドバックス', title: 'アリゾナ・ダイヤモンドバックス', accent: '#a71930', league: 'nl-west', type: 'mlb' },
-            ROCKIES: { id: '1v3Hq3lpfBYPU1etbGTJcJJzTexLyxnpKIKFLAoRJyRw', name: 'ロッキーズ', title: 'コロラド・ロッキーズ', accent: '#333366', league: 'nl-west', type: 'mlb' }
+            HANSHIN: { id: '1hZwkTDSa4AOUSlvFvgYB74hU78Uk6Tb3Wxdr6wKuPhs', name: '阪神', title: '阪神タイガース', accent: '#ffcc00', league: 'ce' },
+            BAYSTARS: { id: '1EGfKQS7CPBxnqk7MN6MVoFc1naTvplPwMMlvO6ucXrs', name: 'DeNA', title: '横浜DeNAベイスターズ', accent: '#005596', league: 'ce' },
+            GIANTS: { id: '11fiRAjQKNG2widh8Hs9X5izk76CsBhkxC5GucEu3Gio', name: '巨人', title: '読売ジャイアンツ', accent: '#ff6600', league: 'ce' },
+            DRAGONS: { id: '1jgeiLHIvsXpg-Lb-NS9EwQtsciqqusxMYqUZNDVt5MA', name: '中日', title: '中日ドラゴンズ', accent: '#004a9e', league: 'ce' },
+            CARP: { id: '1xp_n78P5IMw63fD9dtDF9tQhK9zgF5otK9fwLNPOW2s', name: '広島', title: '広島東洋カープ', accent: '#ff0000', league: 'ce' },
+            SWALLOWS: { id: '1BYL-hAJNaSshpWfDYnYsk9GdUIT9nEEIGejLuFV4BxY', name: 'ヤクルト', title: '東京ヤクルトスワローズ', accent: '#97c24a', league: 'ce' }
         };
 
         let allPlayers = []; 
@@ -316,15 +235,11 @@
 
         function init() {
             const sidebarLeagues = {
-                'pa': document.getElementById('pa-league'), 'ce': document.getElementById('ce-league'),
-                'al-east': document.getElementById('al-east'), 'al-central': document.getElementById('al-central'), 'al-west': document.getElementById('al-west'),
-                'nl-east': document.getElementById('nl-east'), 'nl-central': document.getElementById('nl-central'), 'nl-west': document.getElementById('nl-west')
+                'pa': document.getElementById('pa-league'), 'ce': document.getElementById('ce-league')
             };
 
             const homeGrids = {
-                'pa': document.getElementById('home-pa-grid'), 'ce': document.getElementById('home-ce-grid'),
-                'al-east': document.getElementById('home-al-east-grid'), 'al-central': document.getElementById('home-al-central-grid'), 'al-west': document.getElementById('home-al-west-grid'),
-                'nl-east': document.getElementById('home-nl-east-grid'), 'nl-central': document.getElementById('home-nl-central-grid'), 'nl-west': document.getElementById('home-nl-west-grid')
+                'pa': document.getElementById('home-pa-grid'), 'ce': document.getElementById('home-ce-grid')
             };
             
             Object.values(sidebarLeagues).forEach(el => { if(el) el.innerHTML = ''; });
@@ -365,43 +280,22 @@
             document.getElementById('home-notice-dropdown').style.display = 'none';
         }
 
-        function generateFilterChips(teamType) {
+        function generateFilterChips() {
             const container = document.getElementById('dynamic-chips-area');
             container.innerHTML = '';
 
-            let armyConfigs = [];
-            let posConfigs = [];
-
-            if (teamType === 'mlb') {
-                armyConfigs = [
-                    { id: 'all-army', label: '全登録', value: 'all' },
-                    { id: '1f', label: 'メジャー', value: 'メジャー' },
-                    { id: '2f', label: 'マイナー', value: 'マイナー' },
-                    { id: 'il', label: 'IL入り', value: 'IL' }
-                ];
-                posConfigs = [
-                    { id: 'all-pos', label: '全位置', value: 'all' },
-                    { id: 'pitcher', label: '投手', value: '投手' },
-                    { id: 'catcher', label: '捕手', value: '捕手' },
-                    { id: 'infielder', label: '内野', value: '内野' },
-                    { id: 'outfielder', label: '外野', value: '外野' },
-                    { id: 'dh', label: '指名打者', value: '指名打者' },
-                    { id: 'twoway', label: '二刀流', value: '二刀流' }
-                ];
-            } else {
-                armyConfigs = [
-                    { id: 'all-army', label: '全登録', value: 'all' },
-                    { id: '1f', label: '一軍', value: '一軍' },
-                    { id: '2f', label: '二軍', value: '二軍' }
-                ];
-                posConfigs = [
-                    { id: 'all-pos', label: '全位置', value: 'all' },
-                    { id: 'pitcher', label: '投手', value: '投手' },
-                    { id: 'catcher', label: '捕手', value: '捕手' },
-                    { id: 'infielder', label: '内野', value: '内野' },
-                    { id: 'outfielder', label: '外野', value: '外野' }
-                ];
-            }
+            const armyConfigs = [
+                { id: 'all-army', label: '全登録', value: 'all' },
+                { id: '1f', label: '一軍', value: '一軍' },
+                { id: '2f', label: '二軍', value: '二軍' }
+            ];
+            const posConfigs = [
+                { id: 'all-pos', label: '全位置', value: 'all' },
+                { id: 'pitcher', label: '投手', value: '投手' },
+                { id: 'catcher', label: '捕手', value: '捕手' },
+                { id: 'infielder', label: '内野', value: '内野' },
+                { id: 'outfielder', label: '外野', value: '外野' }
+            ];
 
             armyConfigs.forEach(c => {
                 const btn = document.createElement('button');
@@ -438,7 +332,7 @@
             activeArmyFilter = 'all';
             activePosFilter = 'all';
             
-            generateFilterChips(t.type);
+            generateFilterChips();
             updateFavBtnUI(); 
 
             document.getElementById('team-name-display').innerText = t.title;
@@ -461,18 +355,15 @@
 
                 parsed = parsed.filter(p => p[0] && p[1] && p[0] !== '背番号');
 
-                // 背番号順のソート処理（「00」→「0」→「その他数字」の並び順に対応）
                 parsed.sort((a, b) => {
                     const rawA = String(a[0]).trim();
                     const rawB = String(b[0]).trim();
 
-                    // 1. 「00」と「0」の特殊ハンドリング
                     if (rawA === '00' && rawB !== '00') return -1;
                     if (rawB === '00' && rawA !== '00') return 1;
                     if (rawA === '0' && rawB !== '0' && rawB !== '00') return -1;
                     if (rawB === '0' && rawA !== '0' && rawA !== '00') return 1;
 
-                    // 2. 通常の数値変換と比較
                     const numA = parseInt(rawA, 10);
                     const numB = parseInt(rawB, 10);
 
@@ -520,15 +411,13 @@
 
         function setArmyFilter(val) {
             activeArmyFilter = val;
-            const t = TEAMS[currentTeamKey];
-            generateFilterChips(t.type);
+            generateFilterChips();
             applyFilters();
         }
 
         function setPosFilter(val) {
             activePosFilter = val;
-            const t = TEAMS[currentTeamKey];
-            generateFilterChips(t.type);
+            generateFilterChips();
             applyFilters();
         }
 
@@ -545,8 +434,6 @@
                 if (activeArmyFilter !== 'all' && !army.includes(activeArmyFilter)) return false;
 
                 if (activePosFilter !== 'all') {
-                    if (activePosFilter === '指名打者' && !(pos.includes('指名打者') || pos.includes('DH'))) return false;
-                    if (activePosFilter === '二刀流' && !pos.includes('二刀流')) return false;
                     if (activePosFilter === '投手' && !pos.includes('投手')) return false;
                     if (activePosFilter === '捕手' && !pos.includes('捕手')) return false;
                     if (activePosFilter === '内野' && !pos.includes('内野')) return false;
@@ -576,15 +463,12 @@
                 else if (playerName.length === 6) lenClass = 'len-6';
                 else if (playerName.length >= 7) lenClass = 'len-long';
 
-                // 試合数(2)を除く投手成績インデックス: 勝利(3), 敗戦(4), ホールド(5), セーブ(6), 奪三振(9), 防御率(20), WHIP(21)
                 const pIndicesExcludingGames = [3,4,5,6,9,20,21];
-                // 試合数(2)を除く野手成績インデックス: 打数(12), 安打(13), 本塁打(14), 打点(15), 四死球(17), 盗塁(19), 打率(22), OPS(23)
                 const bIndicesExcludingGames = [12,13,14,15,17,19,22,23];
                 
                 const hasPitcherRealStats = hasStatsData(p, pIndicesExcludingGames);
                 const hasBatterRealStats = hasStatsData(p, bIndicesExcludingGames);
                 
-                // 切り替え可能条件：投手成績・野手成績の双方に試合数以外の実績(0以外)が存在すること
                 const canSwitch = (hasPitcherRealStats && hasBatterRealStats);
 
                 let l1, s1, l2, s2, l3, s3, modeName;
@@ -601,8 +485,7 @@
                 }
 
                 let armyClass = 'army-2f'; 
-                if (army.includes('一軍') || army.includes('メジャー')) armyClass = 'army-1f';
-                if (army.includes('IL')) armyClass = 'army-il';
+                if (army.includes('一軍')) armyClass = 'army-1f';
 
                 const card = document.createElement('div');
                 card.className = `player-card`;
@@ -657,14 +540,14 @@
                 
                 if (targetMode === 'pitcher') {
                     const items = [
-                        {l:'防御率', v:d[20] || '0.00', type:'normal'}, 
-                        {l:'試合数', v:d[2] || '0', type:'normal'}, 
-                        {l:'勝利', v:d[3] || '0', type:'normal'}, 
-                        {l:'敗戦', v:d[4] || '0', type:'normal'}, 
-                        {l:'ホールド', v:d[5] || '0', type:'normal'}, 
-                        {l:'セーブ', v:d[6] || '0', type:'normal'}, 
-                        {l:'奪三振', v:d[9] || '0', type:'normal'}, 
-                        {l:'WHIP', v:d[21] || '0.00', type:'normal'}
+                        {l:'防御率', v:d[20] || '0.00'}, 
+                        {l:'試合数', v:d[2] || '0'}, 
+                        {l:'勝利', v:d[3] || '0'}, 
+                        {l:'敗戦', v:d[4] || '0'}, 
+                        {l:'ホールド', v:d[5] || '0'}, 
+                        {l:'セーブ', v:d[6] || '0'}, 
+                        {l:'奪三振', v:d[9] || '0'}, 
+                        {l:'WHIP', v:d[21] || '0.00'}
                     ];
                     statsHTML = items.map(i => `
                         <div class="modal-stat-box">
