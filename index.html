@@ -427,17 +427,18 @@
                     const pos = p[24] || ''; 
                     const isInitialPitcher = pos.includes("投手") || pos.includes("二刀流");
                     
-                    // ★ シート構造の違いを吸収
                     let birthday = '---';
                     let mlbTeam = '';
                     let army = '';
+                    let hometown = ''; // 出身地用の変数
 
                     if (key === 'JAPAN_MLB') {
-                        birthday = p[25] || '---'; // メジャーのZ列
-                        mlbTeam = p[26] || '';     // メジャーのAA列
+                        birthday = p[25] || '---'; 
+                        mlbTeam = p[26] || '';     
                     } else {
-                        birthday = p[26] || '---'; // NPBのAA列
-                        army = p[25] || '';        // NPBのZ列
+                        birthday = p[26] || '---'; 
+                        army = p[25] || '';        
+                        hometown = p[27] || '';    // NPBのみAB列(27)から出身地を取得
                     }
 
                     return { 
@@ -448,7 +449,8 @@
                         birthday: birthday,
                         mlbTeam: mlbTeam,
                         army: army,
-                        position: pos
+                        position: pos,
+                        hometown: hometown
                     };
                 });
                 applyFilters();
@@ -594,6 +596,7 @@
 
                 let badgeSpan = '';
                 let armyText = '';
+                let hometownHTML = ''; // 出身地の表示用HTML
 
                 if (isMlbTeam) {
                     if (pObj.mlbTeam) {
@@ -602,6 +605,10 @@
                     }
                 } else {
                     armyText = pObj.army ? `【${pObj.army}】` : '';
+                    // NPBの場合のみ出身地を表示
+                    if (pObj.hometown) {
+                        hometownHTML = `<br>出身地: ${pObj.hometown}`;
+                    }
                 }
 
                 const ageStr = calculateAge(pObj.birthday);
@@ -617,7 +624,7 @@
                     </div>
                     <div style="font-size:14px; color:#444; margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:10px;">
                         守備位置: ${pObj.position || '不明'} <br>
-                        生年月日: ${pObj.birthday}${ageStr}
+                        生年月日: ${pObj.birthday}${ageStr}${hometownHTML}
                     </div>
                     
                     <div style="font-size:12px; font-weight:bold; color:#888; margin-bottom:8px;">
