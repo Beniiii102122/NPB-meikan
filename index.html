@@ -425,13 +425,30 @@
 
                 allPlayers = parsed.map((p, index) => {
                     const pos = p[24] || ''; 
-                    // 初期表示状態を確定（投手か野手か）
                     const isInitialPitcher = pos.includes("投手") || pos.includes("二刀流");
+                    
+                    // ★ シート構造の違いを吸収
+                    let birthday = '---';
+                    let mlbTeam = '';
+                    let army = '';
+
+                    if (key === 'JAPAN_MLB') {
+                        birthday = p[25] || '---'; // メジャーのZ列
+                        mlbTeam = p[26] || '';     // メジャーのAA列
+                    } else {
+                        birthday = p[26] || '---'; // NPBのAA列
+                        army = p[25] || '';        // NPBのZ列
+                    }
+
                     return { 
                         id: index, 
                         data: p, 
                         initialType: isInitialPitcher ? 'pitcher' : 'batter',
-                        currentView: isInitialPitcher ? 'pitcher' : 'batter' 
+                        currentView: isInitialPitcher ? 'pitcher' : 'batter',
+                        birthday: birthday,
+                        mlbTeam: mlbTeam,
+                        army: army,
+                        position: pos
                     };
                 });
                 applyFilters();
@@ -442,17 +459,16 @@
             const searchVal = document.getElementById('player-search').value.trim().toLowerCase();
             const isMlbTeam = (currentTeamKey === 'JAPAN_MLB');
             const filtered = allPlayers.filter(pObj => {
-                const p = pObj.data; const name = (p[1] || '').toLowerCase(); const pos = p[24] || ''; 
-                const army = isMlbTeam ? '' : (p[25] || ''); 
+                const p = pObj.data; const name = (p[1] || '').toLowerCase();
                 if (searchVal && !name.includes(searchVal)) return false;
-                if (!isMlbTeam && activeArmyFilter !== 'all' && !army.includes(activeArmyFilter)) return false;
+                if (!isMlbTeam && activeArmyFilter !== 'all' && !pObj.army.includes(activeArmyFilter)) return false;
                 if (activePosFilter !== 'all') {
-                    if (activePosFilter === '投手' && !pos.includes('投手')) return false;
-                    if (activePosFilter === '捕手' && !pos.includes('捕手')) return false;
-                    if (activePosFilter === '内野' && !pos.includes('内野')) return false;
-                    if (activePosFilter === '外野' && !pos.includes('外野')) return false;
-                    if (activePosFilter === '指名打者' && !pos.includes('指名打者')) return false;
-                    if (activePosFilter === '二刀流' && !pos.includes('二刀流')) return false;
+                    if (activePosFilter === '投手' && !pObj.position.includes('投手')) return false;
+                    if (activePosFilter === '捕手' && !pObj.position.includes('捕手')) return false;
+                    if (activePosFilter === '内野' && !pObj.position.includes('内野')) return false;
+                    if (activePosFilter === '外野' && !pObj.position.includes('外野')) return false;
+                    if (activePosFilter === '指名打者' && !pObj.position.includes('指名打者')) return false;
+                    if (activePosFilter === '二刀流' && !pObj.position.includes('二刀流')) return false;
                 }
                 return true;
             });
@@ -467,7 +483,6 @@
             applyFilters(); 
         }
 
-        // 有効なデータが入っているか調べる補助関数（0, 0.00, .000, 空白、--- 以外なら true）
         function hasValidStats(val) {
             if (!val) return false;
             const s = val.trim();
@@ -482,28 +497,21 @@
                 
                 let badgeHTML = '';
                 if (isMlbTeam) {
-                    const mlbTeamAbbr = p[26] || '';
-                    if (mlbTeamAbbr) {
-                        const style = getMlbTeamStyle(mlbTeamAbbr);
-                        badgeHTML = `<div class="army-badge" style="background:${style.bg}; color:${style.text}; border-color:${style.bg}">${mlbTeamAbbr}</div>`;
+                    if (pObj.mlbTeam) {
+                        const style = getMlbTeamStyle(pObj.mlbTeam);
+                        badgeHTML = `<div class="army-badge" style="background:${style.bg}; color:${style.text}; border-color:${style.bg}">${pObj.mlbTeam}</div>`;
                     }
-                } else if (!isMlbTeam && p[25]) { 
-                    badgeHTML = `<div class="army-badge ${p[25].includes('一軍') ? 'army-1f' : 'army-2f'}">${p[25]}</div>`;
+                } else if (pObj.army) { 
+                    badgeHTML = `<div class="army-badge ${pObj.army.includes('一軍') ? 'army-1f' : 'army-2f'}">${pObj.army}</div>`;
                 }
 
-                // ★条件判定のロジック
-                // 1. 投手成績（試合数[2]以外）に0以外の数字があるか
                 const hasPitchingData = [p[3], p[4], p[5], p[6], p[9], p[20], p[21]].some(hasValidStats);
-                // 2. 野手成績（試合数[2]以外）に0以外の数字があるか
                 const hasBattingData = [p[12], p[13], p[14], p[15], p[17], p[19], p[22], p[23]].some(hasValidStats);
 
-                // 本来の登録と逆のスタッツに値が入っている場合にボタンを有効化する
                 let isClickable = false;
                 if (pObj.initialType === 'pitcher') {
-                    // 投手の場合：野手成績（試合数以外）にデータがあれば切り替え可能
                     if (hasBattingData) isClickable = true;
                 } else {
-                    // 野手の場合：投手成績（試合数以外）にデータがあれば切り替え可能
                     if (hasPitchingData) isClickable = true;
                 }
 
@@ -585,24 +593,18 @@
                 }
 
                 let badgeSpan = '';
-                let birthDateValue = '';
                 let armyText = '';
 
                 if (isMlbTeam) {
-                    const mlbTeamAbbr = d[26] || '';
-                    if (mlbTeamAbbr) {
-                        const s = getMlbTeamStyle(mlbTeamAbbr);
-                        badgeSpan = `<span style="background:${s.bg}; color:${s.text}; padding:2px 6px; border-radius:4px; font-size:12px; margin-left:8px;">${mlbTeamAbbr}</span>`;
+                    if (pObj.mlbTeam) {
+                        const s = getMlbTeamStyle(pObj.mlbTeam);
+                        badgeSpan = `<span style="background:${s.bg}; color:${s.text}; padding:2px 6px; border-radius:4px; font-size:12px; margin-left:8px;">${pObj.mlbTeam}</span>`;
                     }
-                    birthDateValue = d[27] || ''; // スプレッドシート側の生年月日位置に合わせて調整してください
-                    armyText = '';
                 } else {
-                    armyText = d[25] ? `【${d[25]}】` : '';
-                    birthDateValue = d[27] || ''; // スプレッドシート側の生年月日位置に合わせて調整してください
+                    armyText = pObj.army ? `【${pObj.army}】` : '';
                 }
 
-                const ageStr = calculateAge(birthDateValue);
-                const positionText = d[24] || '不明';
+                const ageStr = calculateAge(pObj.birthday);
 
                 const content = document.createElement('div');
                 content.style = "background:#fff; width:100%; max-width:400px; border-radius:8px; padding:20px; box-sizing:border-box; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.2);";
@@ -614,8 +616,8 @@
                         ${d[1] || ''} ${badgeSpan}
                     </div>
                     <div style="font-size:14px; color:#444; margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:10px;">
-                        守備位置: ${positionText} <br>
-                        生年月日: ${birthDateValue}${ageStr}
+                        守備位置: ${pObj.position || '不明'} <br>
+                        生年月日: ${pObj.birthday}${ageStr}
                     </div>
                     
                     <div style="font-size:12px; font-weight:bold; color:#888; margin-bottom:8px;">
