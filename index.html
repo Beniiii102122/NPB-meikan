@@ -586,7 +586,6 @@
 
                 let badgeSpan = '';
                 let birthDateValue = '';
-                let labelHTML = '';
                 let armyText = '';
 
                 if (isMlbTeam) {
@@ -595,44 +594,83 @@
                         const s = getMlbTeamStyle(mlbTeamAbbr);
                         badgeSpan = `<span style="background:${s.bg}; color:${s.text}; padding:2px 6px; border-radius:4px; font-size:12px; margin-left:8px;">${mlbTeamAbbr}</span>`;
                     }
-                    birthDateValue = d[25] || '';
-                    labelHTML = `<div style="font-size:13px; margin-bottom:15px; color:#444;">チーム: ${mlbTeamAbbr}</div>`;
-                    armyText = 'MLB';
+                    birthDateValue = d[27] || ''; // スプレッドシート側の生年月日位置に合わせて調整してください
+                    armyText = '';
                 } else {
-                    birthDateValue = d[26] || '';
-                    const hometown = d[27] || '未登録';
-                    labelHTML = `<div style="font-size:13px; margin-bottom:15px; color:#444;">出身地: ${hometown}</div>`;
-                    armyText = d[25] || '---';
+                    armyText = d[25] ? `【${d[25]}】` : '';
+                    birthDateValue = d[27] || ''; // スプレッドシート側の生年月日位置に合わせて調整してください
                 }
 
-                modal.innerHTML = `
-                    <div style="background:#fff; width:100%; max-width:420px; padding:20px; border-radius:12px; position:relative;" onclick="event.stopPropagation()">
-                        <div style="font-size:13px; color:#888;">#${d[0] || '0'} | ${d[24] || '野手'} [${armyText}]</div>
-                        <div style="font-size:24px; font-weight:bold; margin-bottom:10px; border-bottom:2px solid var(--team-accent);">${d[1]}${badgeSpan}</div>
-                        <div style="font-size:13px; margin-bottom:4px; color:#444;">生年月日: ${birthDateValue}${calculateAge(birthDateValue)}</div>
-                        ${labelHTML}
-                        <div style="font-size:12px; font-weight:bold; text-align:center; margin-bottom:6px; color:#555;">【${mode === 'pitcher' ? '投手成績' : '野手成績'}】</div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">${statsHTML}</div>
-                        <button style="width:100%; padding:12px; background:#333; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="this.closest('div').parentElement.remove()">閉じる</button>
-                    </div>`;
+                const ageStr = calculateAge(birthDateValue);
+                const positionText = d[24] || '不明';
+
+                const content = document.createElement('div');
+                content.style = "background:#fff; width:100%; max-width:400px; border-radius:8px; padding:20px; box-sizing:border-box; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.2);";
+                content.onclick = (e) => e.stopPropagation();
+
+                content.innerHTML = `
+                    <div style="font-size:13px; color:#666; margin-bottom:5px;">背番号 ${d[0] || '--'} ${armyText}</div>
+                    <div style="font-size:22px; font-weight:bold; color:#000; margin-bottom:10px; display:flex; align-items:center;">
+                        ${d[1] || ''} ${badgeSpan}
+                    </div>
+                    <div style="font-size:14px; color:#444; margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                        守備位置: ${positionText} <br>
+                        生年月日: ${birthDateValue}${ageStr}
+                    </div>
+                    
+                    <div style="font-size:12px; font-weight:bold; color:#888; margin-bottom:8px;">
+                        ${mode === 'pitcher' ? '■ 投手成績' : '■ 野手成績'}
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-height:300px; overflow-y:auto; padding-right:4px;">
+                        ${statsHTML}
+                    </div>
+
+                    <button style="margin-top:20px; width:100%; padding:10px; background:var(--team-accent); color:#fff; border:none; border-radius:4px; font-size:14px; font-weight:bold; cursor:pointer;" onclick="this.closest('div').parentElement.remove()">閉じる</button>
+                `;
+
+                modal.appendChild(content);
             }
+
             gen(pObj.currentView);
             document.body.appendChild(modal);
         }
 
+        /* --- お気に入りチーム機能 --- */
         function toggleFavoriteTeam() {
-            const fav = localStorage.getItem('fav_team_key');
-            if (fav === currentTeamKey) localStorage.removeItem('fav_team_key'); else localStorage.setItem('fav_team_key', currentTeamKey);
+            const currentFav = localStorage.getItem('fav_team_key');
+            if (currentFav === currentTeamKey) {
+                localStorage.removeItem('fav_team_key');
+            } else {
+                localStorage.setItem('fav_team_key', currentTeamKey);
+            }
             updateFavBtnUI();
         }
+
         function updateFavBtnUI() {
+            const favTeam = localStorage.getItem('fav_team_key');
             const btn = document.getElementById('fav-btn');
-            btn.innerText = (localStorage.getItem('fav_team_key') === currentTeamKey) ? '⭐' : '☆';
-            btn.style.color = (localStorage.getItem('fav_team_key') === currentTeamKey) ? '#ffcc00' : '#aaa';
+            if (favTeam === currentTeamKey) {
+                btn.innerText = '★';
+                btn.style.color = 'var(--team-accent)';
+            } else {
+                btn.innerText = '☆';
+                btn.style.color = '#ccc';
+            }
         }
-        function openNav() { document.getElementById("mySidebar").style.width = "var(--sidebar-width)"; }
-        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
-        function toggleDropdown(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
+
+        /* --- サイドバー開閉 --- */
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "var(--sidebar-width)";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+        }
+
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        }
     </script>
 </body>
 </html>
