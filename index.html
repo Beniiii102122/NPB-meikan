@@ -190,111 +190,9 @@
         .accordion-content p:not(:last-child) {
             margin-bottom: 12px;
         }
-
-        /* === 【新追加】お知らせ機能の見た目（CSS） === */
-        .notification-container {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: inline-block;
-            z-index: 1000;
-        }
-        .notification-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            position: relative;
-            padding: 5px;
-            transition: transform 0.2s;
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .notification-btn:hover {
-            transform: scale(1.1);
-        }
-        .badge-count {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background-color: #ff3b30;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            display: none;
-        }
-        .notification-dropdown {
-            display: none;
-            position: absolute;
-            top: 45px;
-            right: 0;
-            width: 280px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            max-height: 350px;
-            overflow-y: auto;
-            text-align: left;
-        }
-        .notification-dropdown.show {
-            display: block;
-        }
-        .dropdown-header {
-            padding: 10px 15px;
-            font-weight: bold;
-            border-bottom: 1px solid #eee;
-            background-color: #f9f9f9;
-            color: #333;
-            font-size: 14px;
-        }
-        .news-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .news-item:last-child {
-            border-bottom: none;
-        }
-        .news-date {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 3px;
-        }
-        .news-title {
-            font-weight: bold;
-            font-size: 13px;
-            color: #222;
-            margin-bottom: 3px;
-        }
-        .news-content {
-            font-size: 12px;
-            color: #555;
-            line-height: 1.4;
-        }
-        .no-news {
-            padding: 20px;
-            text-align: center;
-            color: #999;
-            font-size: 13px;
-        }
     </style>
 </head>
 <body>
-
-    <div class="notification-container">
-        <button id="notification-btn" class="notification-btn" aria-label="お知らせ">🔔</button>
-        <div id="notification-badge-count" class="badge-count">0</div>
-        <div id="notification-dropdown" class="notification-dropdown">
-            <div class="dropdown-header">更新情報</div>
-            <div id="notification-list" class="dropdown-body"></div>
-        </div>
-    </div>
 
     <div id="home-screen">
         <div class="home-title">NPB 選手名鑑</div>
@@ -438,9 +336,6 @@
 
             const favTeam = localStorage.getItem('fav_team_key');
             if (favTeam && TEAMS[favTeam]) switchTeam(favTeam); else showHome();
-
-            // === 【新追加】お知らせデータの読み込み処理 ===
-            initNotification();
         }
 
         function showHome() {
@@ -471,27 +366,6 @@
                 el.style.display = 'block';
                 title.innerText = '注意事項 ▲';
             }
-        }
-
-        // サイドバーを開く・閉じる用の関数
-        function openNav() { document.getElementById("mySidebar").style.width = "var(--sidebar-width)"; }
-        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
-        function toggleDropdown(id) {
-            const el = document.getElementById(id);
-            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-        }
-
-        // お気に入り機能
-        function updateFavBtnUI() {
-            const favBtn = document.getElementById('fav-btn');
-            const favTeam = localStorage.getItem('fav_team_key');
-            if (favBtn) favBtn.innerText = (favTeam === currentTeamKey) ? '★' : '☆';
-        }
-        function toggleFavoriteTeam() {
-            const favTeam = localStorage.getItem('fav_team_key');
-            if (favTeam === currentTeamKey) { localStorage.removeItem('fav_team_key'); }
-            else { localStorage.setItem('fav_team_key', currentTeamKey); }
-            updateFavBtnUI();
         }
 
         function generateFilterChips() {
@@ -556,7 +430,7 @@
                     let birthday = '---';
                     let mlbTeam = '';
                     let army = '';
-                    let hometown = '';
+                    let hometown = ''; // 出身地用の変数
 
                     if (key === 'JAPAN_MLB') {
                         birthday = p[25] || '---'; 
@@ -564,7 +438,7 @@
                     } else {
                         birthday = p[26] || '---'; 
                         army = p[25] || '';        
-                        hometown = p[27] || '';    
+                        hometown = p[27] || '';    // NPBのみAB列(27)から出身地を取得
                     }
 
                     return { 
@@ -667,19 +541,15 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = 'player-card';
+                card.className = `player-card`;
+                card.onclick = () => showDetail(pObj);
                 
-                let nameClass = "name";
-                if (playerName.includes("スチュワート")) {
-                    nameClass = "name stewart-marquee";
-                }
+                const isTargetMarquee = playerName.includes('スチュワート');
+                const nameClass = isTargetMarquee ? "name stewart-marquee" : "name";
 
                 card.innerHTML = `
-                    <div class="number-badge">${playerNo}</div>
-                    ${badgeHTML}
-                    <div class="name-wrapper">
-                        <div class="${nameClass}">${playerName}</div>
-                    </div>
+                    <div class="number-badge">${playerNo}</div>${badgeHTML}
+                    <div class="name-wrapper"><div class="${nameClass}">${playerName}</div></div>
                     <div class="stats-grid">
                         <div><div class="label">${l1}</div><div class="stats">${s1}</div></div>
                         <div><div class="label">${l2}</div><div class="stats">${s2_val}</div></div>
@@ -691,64 +561,124 @@
             });
         }
 
-        // === 【新追加】お知らせ（ニュース）機能の実装 ===
-        async function initNotification() {
-            const btn = document.getElementById('notification-btn');
-            const dropdown = document.getElementById('notification-dropdown');
-            const badge = document.getElementById('notification-badge-count');
-            const list = document.getElementById('notification-list');
-
-            // 1. 🔔ボタンを押した時のドロップダウン開閉処理
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dropdown.classList.toggle('show');
-                
-                // 開いたらバッジカウントを既読として消す（ローカルストレージに最後に見たIDを保存する等も可能ですが、今回はシンプルにクリックで消灯）
-                if (dropdown.classList.contains('show')) {
-                    badge.style.display = 'none';
-                }
-            });
-
-            // 2. ドロップダウン以外をクリックしたら閉じる処理
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && e.target !== btn) {
-                    dropdown.classList.remove('show');
-                }
-            });
-
-            // 3. news.json の読み込みと画面反映
-            try {
-                // 同じフォルダ内の news.json を取得
-                const res = await fetch('news.json');
-                if (!res.ok) throw new Error('お知らせの取得に失敗しました');
-                
-                const data = await res.json();
-
-                if (data && data.length > 0) {
-                    list.innerHTML = '';
-                    
-                    // バッジに未読件数（件数）を表示して見えるようにする
-                    badge.innerText = data.length;
-                    badge.style.display = 'flex';
-
-                    // データをループしてHTMLを追加
-                    data.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'news-item';
-                        div.innerHTML = `
-                            <div class="news-date">${item.date}</div>
-                            <div class="news-title">${item.title}</div>
-                            <div class="news-content">${item.content}</div>
-                        `;
-                        list.appendChild(div);
-                    });
+        function showDetail(pObj) {
+            const d = pObj.data; const isMlbTeam = (currentTeamKey === 'JAPAN_MLB');
+            const modal = document.createElement('div');
+            modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:2000;padding:10px;box-sizing:border-box;";
+            modal.onclick = () => modal.remove();
+            
+            function gen(mode) {
+                let statsHTML = '';
+                if (mode === 'pitcher') {
+                    const items = [
+                        {l:'防御率', v:d[20]}, {l:'試合数', v:d[2]}, {l:'勝利', v:d[3]}, 
+                        {l:'敗戦', v:d[4]}, {l:'ホールド', v:d[5]}, {l:'セーブ', v:d[6]}, 
+                        {l:'奪三振', v:d[9]}, {l:'WHIP', v:d[21]}
+                    ];
+                    statsHTML = items.map(i => `<div class="modal-stat-box"><div class="modal-stat-label">${i.l}</div><div class="modal-stat-value">${i.v || '0'}</div></div>`).join('');
                 } else {
-                    list.innerHTML = '<div class="no-news">お知らせはありません</div>';
+                    const tatsu = d[12] || '0';
+                    const anda = d[13] || '0';
+                    
+                    statsHTML = `
+                        <div class="modal-stat-box large-box">
+                            <div class="modal-stat-label">打率（打数-安打）</div>
+                            <div class="modal-stat-value">${d[22] || '.000'} <span style="font-size:14px; font-weight:normal; color:#666;">(${tatsu}-${anda})</span></div>
+                        </div>
+                        <div class="modal-stat-box"><div class="modal-stat-label">試合数</div><div class="modal-stat-value">${d[2] || '0'}</div></div>
+                        <div class="modal-stat-box"><div class="modal-stat-label">本塁打</div><div class="modal-stat-value">${d[14] || '0'}</div></div>
+                        <div class="modal-stat-box"><div class="modal-stat-label">打点</div><div class="modal-stat-value">${d[15] || '0'}</div></div>
+                        <div class="modal-stat-box"><div class="modal-stat-label">四死球</div><div class="modal-stat-value">${d[17] || '0'}</div></div>
+                        <div class="modal-stat-box"><div class="modal-stat-label">盗塁</div><div class="modal-stat-value">${d[19] || '0'}</div></div>
+                        <div class="modal-stat-box"><div class="modal-stat-label">OPS</div><div class="modal-stat-value">${d[23] || '.000'}</div></div>
+                    `;
                 }
-            } catch (error) {
-                console.error(error);
-                list.innerHTML = '<div class="no-news" style="color:red;">お知らせの読み込みに失敗しました</div>';
+
+                let badgeSpan = '';
+                let armyText = '';
+                let hometownHTML = ''; // 出身地の表示用HTML
+
+                if (isMlbTeam) {
+                    if (pObj.mlbTeam) {
+                        const s = getMlbTeamStyle(pObj.mlbTeam);
+                        badgeSpan = `<span style="background:${s.bg}; color:${s.text}; padding:2px 6px; border-radius:4px; font-size:12px; margin-left:8px;">${pObj.mlbTeam}</span>`;
+                    }
+                } else {
+                    armyText = pObj.army ? `【${pObj.army}】` : '';
+                    // NPBの場合のみ出身地を表示
+                    if (pObj.hometown) {
+                        hometownHTML = `<br>出身地: ${pObj.hometown}`;
+                    }
+                }
+
+                const ageStr = calculateAge(pObj.birthday);
+
+                const content = document.createElement('div');
+                content.style = "background:#fff; width:100%; max-width:400px; border-radius:8px; padding:20px; box-sizing:border-box; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.2);";
+                content.onclick = (e) => e.stopPropagation();
+
+                content.innerHTML = `
+                    <div style="font-size:13px; color:#666; margin-bottom:5px;">背番号 ${d[0] || '--'} ${armyText}</div>
+                    <div style="font-size:22px; font-weight:bold; color:#000; margin-bottom:10px; display:flex; align-items:center;">
+                        ${d[1] || ''} ${badgeSpan}
+                    </div>
+                    <div style="font-size:14px; color:#444; margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                        守備位置: ${pObj.position || '不明'} <br>
+                        生年月日: ${pObj.birthday}${ageStr}${hometownHTML}
+                    </div>
+                    
+                    <div style="font-size:12px; font-weight:bold; color:#888; margin-bottom:8px;">
+                        ${mode === 'pitcher' ? '■ 投手成績' : '■ 野手成績'}
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-height:300px; overflow-y:auto; padding-right:4px;">
+                        ${statsHTML}
+                    </div>
+
+                    <button style="margin-top:20px; width:100%; padding:10px; background:var(--team-accent); color:#fff; border:none; border-radius:4px; font-size:14px; font-weight:bold; cursor:pointer;" onclick="this.closest('div').parentElement.remove()">閉じる</button>
+                `;
+
+                modal.appendChild(content);
             }
+
+            gen(pObj.currentView);
+            document.body.appendChild(modal);
+        }
+
+        /* --- お気に入りチーム機能 --- */
+        function toggleFavoriteTeam() {
+            const currentFav = localStorage.getItem('fav_team_key');
+            if (currentFav === currentTeamKey) {
+                localStorage.removeItem('fav_team_key');
+            } else {
+                localStorage.setItem('fav_team_key', currentTeamKey);
+            }
+            updateFavBtnUI();
+        }
+
+        function updateFavBtnUI() {
+            const favTeam = localStorage.getItem('fav_team_key');
+            const btn = document.getElementById('fav-btn');
+            if (favTeam === currentTeamKey) {
+                btn.innerText = '★';
+                btn.style.color = 'var(--team-accent)';
+            } else {
+                btn.innerText = '☆';
+                btn.style.color = '#ccc';
+            }
+        }
+
+        /* --- サイドバー開閉 --- */
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "var(--sidebar-width)";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+        }
+
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
     </script>
 </body>
