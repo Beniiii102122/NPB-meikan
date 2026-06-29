@@ -473,7 +473,7 @@
             }
         }
 
-        // サイドバーを開く・閉じる用の関数（既存コードの補完）
+        // サイドバーを開く・閉じる用の関数
         function openNav() { document.getElementById("mySidebar").style.width = "var(--sidebar-width)"; }
         function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
         function toggleDropdown(id) {
@@ -481,7 +481,7 @@
             el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
 
-        // お気に入り機能のスタブ（エラー防止用）
+        // お気に入り機能
         function updateFavBtnUI() {
             const favBtn = document.getElementById('fav-btn');
             const favTeam = localStorage.getItem('fav_team_key');
@@ -667,15 +667,19 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = `player-card`;
-                card.onclick = () => showDetail(pObj);
+                card.className = 'player-card';
                 
-                const isTargetMarquee = playerName.includes('スチュワート');
-                const nameClass = isTargetMarquee ? "name stewart-marquee" : "name";
+                let nameClass = "name";
+                if (playerName.includes("スチュワート")) {
+                    nameClass = "name stewart-marquee";
+                }
 
                 card.innerHTML = `
-                    <div class="number-badge">${playerNo}</div>${badgeHTML}
-                    <div class="name-wrapper"><div class="${nameClass}">${playerName}</div></div>
+                    <div class="number-badge">${playerNo}</div>
+                    ${badgeHTML}
+                    <div class="name-wrapper">
+                        <div class="${nameClass}">${playerName}</div>
+                    </div>
                     <div class="stats-grid">
                         <div><div class="label">${l1}</div><div class="stats">${s1}</div></div>
                         <div><div class="label">${l2}</div><div class="stats">${s2_val}</div></div>
@@ -687,148 +691,64 @@
             });
         }
 
-        function showDetail(pObj) {
-            const d = pObj.data; const isMlbTeam = (currentTeamKey === 'JAPAN_MLB');
-            const modal = document.createElement('div');
-            modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:2000;padding:10px;box-sizing:border-box;";
-            modal.onclick = () => modal.remove();
-            
-            function gen(mode) {
-                let statsHTML = '';
-                if (mode === 'pitcher') {
-                    const items = [
-                        {l:'防御率', v:d[20]}, {l:'試合数', v:d[2]}, {l:'勝利', v:d[3]}, 
-                        {l:'敗戦', v:d[4]}, {l:'ホールド', v:d[5]}, {l:'セーブ', v:d[6]}, 
-                        {l:'奪三振', v:d[9]}, {l:'WHIP', v:d[21]}
-                    ];
-                    statsHTML = items.map(i => `<div class="modal-stat-box"><div class="modal-stat-label">${i.l}</div><div class="modal-stat-value">${i.v || '0'}</div></div>`).join('');
-                } else {
-                    const tatsu = d[12] || '0';
-                    const anda = d[13] || '0';
+        // === 【新追加】お知らせ（ニュース）機能の実装 ===
+        async function initNotification() {
+            const btn = document.getElementById('notification-btn');
+            const dropdown = document.getElementById('notification-dropdown');
+            const badge = document.getElementById('notification-badge-count');
+            const list = document.getElementById('notification-list');
+
+            // 1. 🔔ボタンを押した時のドロップダウン開閉処理
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+                
+                // 開いたらバッジカウントを既読として消す（ローカルストレージに最後に見たIDを保存する等も可能ですが、今回はシンプルにクリックで消灯）
+                if (dropdown.classList.contains('show')) {
+                    badge.style.display = 'none';
+                }
+            });
+
+            // 2. ドロップダウン以外をクリックしたら閉じる処理
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && e.target !== btn) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            // 3. news.json の読み込みと画面反映
+            try {
+                // 同じフォルダ内の news.json を取得
+                const res = await fetch('news.json');
+                if (!res.ok) throw new Error('お知らせの取得に失敗しました');
+                
+                const data = await res.json();
+
+                if (data && data.length > 0) {
+                    list.innerHTML = '';
                     
-                    statsHTML = `
-                        <div class="modal-stat-box large-box">
-                            <div class="modal-stat-label">打率（打数-安打）</div>
-                            <div class="modal-stat-value">${d[22] || '.000'} <span style="font-size:14px; font-weight:normal; color:#666;">(${tatsu}-${anda})</span></div>
-                        </div>
-                        <div class="modal-stat-box"><div class="modal-stat-label">試合数</div><div class="modal-stat-value">${d[2] || '0'}</div></div>
-                        <div class="modal-stat-box"><div class="modal-stat-label">本塁打</div><div class="modal-stat-value">${d[14] || '0'}</div></div>
-                        <div class="modal-stat-box"><div class="modal-stat-label">打点</div><div class="modal-stat-value">${d[15] || '0'}</div></div>
-                        <div class="modal-stat-box"><div class="modal-stat-label">四死球</div><div class="modal-stat-value">${d[17] || '0'}</div></div>
-                        <div class="modal-stat-box"><div class="modal-stat-label">盗塁</div><div class="modal-stat-value">${d[19] || '0'}</div></div>
-                        <div class="modal-stat-box"><div class="modal-stat-label">OPS</div><div class="modal-stat-value">${d[23] || '.000'}</div></div>
-                    `;
-                }
+                    // バッジに未読件数（件数）を表示して見えるようにする
+                    badge.innerText = data.length;
+                    badge.style.display = 'flex';
 
-                let badgeSpan = '';
-                let armyText = '';
-                let hometownHTML = '';
-
-                if (isMlbTeam) {
-                    if (pObj.mlbTeam) {
-                        const s = getMlbTeamStyle(pObj.mlbTeam);
-                        badgeSpan = `<span style="background:${s.bg};color:${s.text};padding:2px 6px;border-radius:4px;font-size:12px;font-weight:bold;margin-left:8px;">${pObj.mlbTeam}</span>`;
-                    }
-                } else {
-                    if (pObj.army) {
-                        armyText = ` ・ ${pObj.army}`;
-                    }
-                    if (pObj.hometown) {
-                        hometownHTML = `<div style="font-size:13px;color:#666;margin-top:4px;">出身地: ${pObj.hometown}</div>`;
-                    }
-                }
-
-                const ageText = calculateAge(pObj.birthday);
-
-                const hasPitchingData = [d[3], d[4], d[5], d[6], d[9], d[20], d[21]].some(hasValidStats);
-                const hasBattingData = [d[12], d[13], d[14], d[15], d[17], d[19], d[22], d[23]].some(hasValidStats);
-                let toggleBtnHTML = '';
-                if (hasPitchingData && hasBattingData) {
-                    toggleBtnHTML = `<button id="m-toggle" style="margin-top:10px;padding:6px 12px;font-size:12px;font-weight:bold;cursor:pointer;background:#eee;border:1px solid #ccc;border-radius:4px;">${mode === 'pitcher' ? '野手成績を見る ⇄' : '投手成績を見る ⇄'}</button>`;
-                }
-
-                modal.innerHTML = `
-                    <div style="background:#fff;width:95%;max-width:340px;border-radius:10px;padding:20px;box-sizing:border-box;box-shadow:0 4px 20px rgba(0,0,0,0.2);" onclick="event.stopPropagation()">
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
-                            <div>
-                                <span style="font-size:13px;font-weight:bold;color:#fff;background:var(--team-accent);padding:2px 6px;border-radius:4px;margin-right:6px;">#${d[0]||'--'}</span>
-                                <span style="font-size:18px;font-weight:bold;color:#000;">${d[1]||''}</span>${badgeSpan}
-                                <div style="font-size:13px;color:#666;margin-top:6px;">${pObj.position}${armyText}</div>
-                                <div style="font-size:13px;color:#666;margin-top:4px;">生年月日: ${pObj.birthday}${ageText}</div>
-                                ${hometownHTML}
-                            </div>
-                            <button style="background:none;border:none;font-size:24px;cursor:pointer;color:#aaa;padding:0;line-height:1;" onclick="document.querySelector('body > div:last-child').remove()">×</button>
-                        </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:15px;">${statsHTML}</div>
-                        <div style="text-align:center;">${toggleBtnHTML}</div>
-                    </div>
-                `;
-
-                const btn = modal.querySelector('#m-toggle');
-                if (btn) {
-                    btn.onclick = () => gen(mode === 'pitcher' ? 'batter' : 'pitcher');
-                }
-            }
-
-            gen(pObj.currentView);
-            document.body.appendChild(modal);
-        }
-
-        // === 【新追加】お知らせ機能のプログラム ===
-        function initNotification() {
-            const notifyBtn = document.getElementById('notification-btn');
-            const notifyDropdown = document.getElementById('notification-dropdown');
-            const notifyList = document.getElementById('notification-list');
-            const badgeCount = document.getElementById('notification-badge-count');
-            let newsData = [];
-
-            fetch('./news.json')
-                .then(res => {
-                    if (!res.ok) throw new Error();
-                    return res.json();
-                })
-                .then(data => {
-                    newsData = data;
-                    if (data.length === 0) {
-                        notifyList.innerHTML = '<div class="no-news">現在お知らせはありません</div>';
-                        return;
-                    }
-                    notifyList.innerHTML = data.map(item => `
-                        <div class="news-item">
+                    // データをループしてHTMLを追加
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'news-item';
+                        div.innerHTML = `
                             <div class="news-date">${item.date}</div>
                             <div class="news-title">${item.title}</div>
                             <div class="news-content">${item.content}</div>
-                        </div>
-                    `).join('');
-
-                    const lastReadId = localStorage.getItem('lastReadNewsId');
-                    const latestId = data[0].id;
-                    if (!lastReadId || parseInt(lastReadId) < latestId) {
-                        const unreadCount = data.filter(item => !lastReadId || item.id > parseInt(lastReadId)).length;
-                        if (unreadCount > 0) {
-                            badgeCount.textContent = unreadCount;
-                            badgeCount.style.display = 'flex';
-                        }
-                    }
-                })
-                .catch(() => {
-                    notifyList.innerHTML = '<div class="no-news">お知らせの読み込みに失敗しました</div>';
-                });
-
-            notifyBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                notifyDropdown.classList.toggle('show');
-                if (notifyDropdown.classList.contains('show') && newsData.length > 0) {
-                    localStorage.setItem('lastReadNewsId', newsData[0].id);
-                    badgeCount.style.display = 'none';
+                        `;
+                        list.appendChild(div);
+                    });
+                } else {
+                    list.innerHTML = '<div class="no-news">お知らせはありません</div>';
                 }
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.notification-container')) {
-                    notifyDropdown.classList.remove('show');
-                }
-            });
+            } catch (error) {
+                console.error(error);
+                list.innerHTML = '<div class="no-news" style="color:red;">お知らせの読み込みに失敗しました</div>';
+            }
         }
     </script>
 </body>
